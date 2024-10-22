@@ -1,0 +1,62 @@
+---
+title: "Data Cleaning"
+author: "Emmett Greenberg, Ted Banken, Ethan McIntosh"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+This script will house any data cleaning processes to go from raw data to model-ready intermediate outputs. These processes are in their own script file so that we don't want to do them every time we build a model.
+
+## MBTA ridership data
+
+```{r}
+# these links are csv download URLs from the MBTA open data portal: https://mbta-massdot.opendata.arcgis.com/search?q=rail%20ridership%20by%20time%20period 
+
+ridership_f23 <- read.csv('https://hub.arcgis.com/api/v3/datasets/80a379ebaa374cfd836ca4d3880ceda4_0/downloads/data?format=csv&spatialRefId=4326&where=1%3D1')
+
+ridership_f17_to_f19 <- read.csv('https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-14836-5882/Rail_Ridership_by_Season_Time_Period_RouteLine_and_Stop_5316095790925663588.csv?sv=2018-03-28&sr=b&sig=a5cGSNkFf5LbnYdFG8CUOu2Xs1QjjTWcOhcTaGDDmrI%3D&se=2024-10-21T23%3A56%3A19Z&sp=r')
+
+# I am not sure whether these URLs are stable - time will tell.
+
+# TODO: save cleaned files with fall 2023 and fall 2019 ridership with the variables we want to keep
+```
+
+For travel times and headways, we can either use schedules (reflecting "promised" service) or actual service. For schedules, we just need the GTFS. For actuals, we need GTFS and the travel time and headway datasets described below.
+
+## MBTA Rapid Transit Travel Times
+
+This is a very large dataset that will require us to:
+- filter dates to our specific season
+- choose which destinations we should consider for each station origin (or if some kind of destination-weighted average travel time is possible / desirable)
+
+2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/b08854b18ad942e4bc471c8c20e80792/about
+2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/a70a2151c74f4ea7b6688970b76d2ff7/about 
+
+## MBTA Rapid Transit Headways 
+
+This is a very large dataset that will require us to:
+- filter dates to our specific season
+- calculate average or median headways per station (/direction?) for our specific season
+
+2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/896d043f33ae4915b530df12141c772c_0/explore
+2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/5c36245a6e7f4b89851b99a4a2bce02b_0/explore
+
+## MBTA GTFS
+
+If we use actual travel times and headways, the only GTFS data we need is the association between stop IDs and stop names (aka parent stations).
+
+If we would prefer scheduled travel times and headways, we would need to calculate average headways per stop from the information in the GTFS file.
+
+Either way, we will also want to grab the lat/long coordinates for each stop from GTFS. GTFS is also probably the best source for calculating the number (and names) of bus routes that serve a given RT station. 
+
+MBTA GTFS recap link: https://mbta-massdot.opendata.arcgis.com/datasets/9ab1dc7ea2bf4ad7b7e25cc6b941b39a/about
+
+## CTPS park-and-ride inventory for MBTA stations
+
+Downloaded from https://www.ctps.org/maploc/www/apps/pnr-dashboard/index.html and stored in the data folder.
+
+Not sure yet what data cleaning steps are needed and what attributes we can use to join it with the rest of the station-level data.

@@ -1,0 +1,273 @@
+FID,station,st_num,lot_id,station_name,line_id,mode,permitrequired_1,permit_only_spaces_1,permit_only_vehicles_1,permit_only_space_utilization_1,parking_space_non_hp_1,used_spaces_non_hp_1,hp_parking_spaces_1,used_hp_parking_spaces_1,total_spaces_1,total_used_spaces_1,total_utilization_all_parking_1,publicparkingnohp_spaces_1,publicparkingnohp_vehicles_1,publicparkingnohp_utilization_1,cars_not_in_marked_spaces_1,lot_ownership_1,parking_fee_1,data_year
+ctps_pnr_lots_polygons.1,Newburyport,109,0,Newburyport,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,200,51,9,1,209,52,0.24880383,200,51,0.255,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.2,Newburyport,109,1,Newburyport,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,291,241,9,2,300,243,0.81,291,241,0.82817869,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.3,Newburyport,109,2,Newburyport,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,374,51,6,0,380,51,0.13421053,374,51,0.13636364,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.4,Rowley,113,3,Rowley,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,275,40,8,0,283,40,0.14134276,275,40,0.14545455,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.5,Ipswich,105,4,Ipswich,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,128,128,4,3,132,131,0.99242424,128,128,1,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.6,Hamilton/Wenham,104,5,Hamilton/Wenham,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,188,109,6,0,194,109,0.56185567,188,109,0.57978723,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.7,North Beverly,110,6,North Beverly,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,82,54,4,1,86,55,0.63953488,82,54,0.65853659,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.8,Rockport,112,7,Rockport,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,80,68,3,0,83,68,0.81927711,80,68,0.85,5,Town,0,2017-2018
+ctps_pnr_lots_polygons.9,Beachmont,1,10,Beachmont,Blue Line,Rapid Transit,No,0,0,N/A,410,289,6,2,416,291,0.69951923,410,289,0.70487805,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.10,Maverick,2,12,Maverick,Blue Line,Rapid Transit,No,0,0,N/A,30,20,0,0,30,20,0.66666667,30,20,0.66666667,0,Private,12,2017-2018
+ctps_pnr_lots_polygons.11,Orient Heights,3,13,Orient Heights,Blue Line,Rapid Transit,No,0,0,N/A,403,303,8,5,411,308,0.74939173,403,303,0.75186104,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.12,Abington,73,16,Abington,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,395,353,9,0,404,353,0.87376238,395,353,0.89367089,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.13,Abington,73,17,Abington,Kingston/Plymouth,Commuter Rail ,Yes,159,59,37%,159,59,0,0,159,59,0.37106918,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.14,Abington,73,18,Abington,Kingston/Plymouth,Commuter Rail ,Yes,39,27,69%,39,27,0,0,39,27,0.69230769,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.15,Alewife,134,19,Alewife,Red Line,Rapid Transit,No,0,0,N/A,2439,2432,32,21,2471,2453,0.9927155,2439,2432,0.99712997,0,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.16,Anderson/Woburn,80,20,Anderson/Woburn,Lowell,Commuter Rail ,No,0,0,N/A,1200,841,21,4,1221,845,0.69205569,1200,841,0.70083333,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.17,Andover,60,21,Andover,Haverhill,Commuter Rail ,No,0,0,N/A,145,145,4,0,149,145,0.97315436,145,145,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.40,Silver Hill,19,51,Silver Hill,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,8,1,0,0,8,1,0.125,8,1,0.125,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.18,Ashland,23,23,Ashland,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,678,548,15,4,693,552,0.7965368,678,548,0.80825959,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.42,South Acton,20,53,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,24,24,100%,24,24,2,1,26,25,0.96153846,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.19,Attleboro,124,25,Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,700,690,16,3,716,693,0.9678771,700,690,0.98571429,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.20,Attleboro,124,27,Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,257,250,0,0,257,250,0.97276265,257,250,0.97276265,0,Private,3,2017-2018
+ctps_pnr_lots_polygons.21,Ayer,9,28,Ayer,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,64,64,5,0,69,64,0.92753623,64,64,1,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.22,Belmont,10,29,Belmont,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,119,80,6,2,125,82,0.656,119,80,0.67226891,0,Town,3,2017-2018
+ctps_pnr_lots_polygons.23,Brandeis/Roberts,11,30,Brandeis/Roberts,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,53,15,5,0,58,15,0.25862069,53,15,0.28301887,0,Private,4.5,2017-2018
+ctps_pnr_lots_polygons.24,Brandeis/Roberts,11,31,Brandeis/Roberts,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,23,15,1,0,24,15,0.625,23,15,0.65217391,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.25,Concord,12,32,Concord,Fitchburg/South Acton,Commuter Rail ,Yes,57,33,58%,57,33,0,0,57,33,0.57894737,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.26,Concord,12,33,Concord,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,23,20,1,0,24,20,0.83333333,23,20,0.86956522,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.27,Concord,12,34,Concord,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,18,18,0,0,18,18,1,18,18,1,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.28,Concord,12,35,Concord,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,44,25,0,0,44,25,0.56818182,44,25,0.56818182,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.29,Fitchburg,13,36,Fitchburg,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,193,95,10,2,203,97,0.47783251,193,95,0.49222798,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.30,Fitchburg,13,37,Fitchburg,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,47,40,4,2,51,42,0.82352941,47,40,0.85106383,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.31,Hastings,14,38,Hastings,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,7,6,0,0,7,6,0.85714286,7,6,0.85714286,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.32,Kendal Green,15,40,Kendal Green,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,52,41,0,0,52,41,0.78846154,52,41,0.78846154,0,Private,4,2017-2018
+ctps_pnr_lots_polygons.33,Lincoln,16,41,Lincoln,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,100,83,4,2,104,85,0.81730769,100,83,0.83,0,Town,3,2017-2018
+ctps_pnr_lots_polygons.34,Lincoln,16,42,Lincoln,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,20,18,0,0,20,18,0.9,20,18,0.9,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.35,Lincoln,16,44,Lincoln,Fitchburg/South Acton,Commuter Rail ,Yes,54,54,100%,54,54,0,0,54,54,1,0,0,0,2,Town,0,2017-2018
+ctps_pnr_lots_polygons.36,Littleton,144,320,Littleton,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,26,26,0,0,26,26,1,26,26,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.37,Littleton,144,48,Littleton,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,194,194,6,0,200,194,0.97,194,194,1,14,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.38,North Leominster,17,49,North Leominster,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,436,130,7,0,443,130,0.29345373,436,130,0.29816514,0,MBTA,3,2017-2018
+ctps_pnr_lots_polygons.39,Shirley,18,50,Shirley,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,113,100,3,1,116,101,0.87068966,113,100,0.88495575,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.41,South Acton,20,52,South Acton,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,110,106,0,0,110,106,0.96363636,110,106,0.96363636,0,Town,5,2017-2018
+ctps_pnr_lots_polygons.43,Waltham,21,54,Waltham,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,50,38,2,0,52,38,0.73076923,50,38,0.76,0,Town,2,2017-2018
+ctps_pnr_lots_polygons.44,Waltham,21,55,Waltham,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,36,26,2,0,38,26,0.68421053,36,26,0.72222222,2,Town,2,2017-2018
+ctps_pnr_lots_polygons.45,West Concord,22,57,West Concord,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,177,136,6,4,183,140,0.76502732,177,136,0.76836158,0,Town,4.5,2017-2018
+ctps_pnr_lots_polygons.46,Southborough,29,58,Southborough,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,364,351,8,1,372,352,0.94623656,364,351,0.96428571,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.47,Natick,27,59,Natick,Framingham/Worcester,Commuter Rail ,Yes,83,43,52%,83,43,0,0,83,43,0.51807229,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.48,Wellesely Farms,30,60,Wellesley Farms,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,192,192,2,0,194,192,0.98969072,192,192,1,2,Town,6,2017-2018
+ctps_pnr_lots_polygons.49,Wellesely Hills,31,61,Wellesley Hills,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,50,50,1,0,51,50,0.98039216,50,50,1,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.50,Wellesely Hills,31,62,Wellesley Hills,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,17,17,0,0,17,17,1,17,17,1,0,On-Street,0,2017-2018
+ctps_pnr_lots_polygons.51,Woodland,52,63,Woodland,Green Line,Rapid Transit,No,0,0,N/A,548,416,11,4,559,420,0.75134168,548,416,0.75912409,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.52,Waban,51,64,Waban,Green Line,Rapid Transit,No,0,0,N/A,54,54,3,0,57,54,0.94736842,54,54,1,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.53,Riverside,50,65,Riverside,Green Line,Rapid Transit,No,0,0,N/A,271,269,8,2,279,271,0.97132617,271,269,0.99261993,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.54,Riverside,50,66,Riverside,Green Line,Rapid Transit,No,0,0,N/A,688,391,14,2,702,393,0.55982906,688,391,0.56831395,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.55,Eliot,48,68,Eliot,Green Line,Rapid Transit,No,0,0,N/A,49,49,3,0,52,49,0.94230769,49,49,1,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.56,Chestnut Hill,47,69,Chestnut Hill,Green Line,Rapid Transit,No,0,0,N/A,69,69,0,0,69,69,1,69,69,1,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.57,Wollaston,143,70,Wollaston,Red Line,Rapid Transit,No,0,0,N/A,524,523,11,4,535,527,0.98504673,524,523,0.9980916,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.58,Savin Hill,142,71,Savin Hill,Red Line,Rapid Transit,No,0,0,N/A,16,14,2,2,18,16,0.88888889,16,14,0.875,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.59,Quincy Adams,176,72,Quincy Adam,Red Line,Rapid Transit,No,0,0,N/A,2159,1629,34,14,2193,1643,0.74920201,2159,1629,0.75451598,0,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.60,North Quincy,139,75,North Quincy,Red Line,Rapid Transit,No,0,0,N/A,825,811,17,4,842,815,0.96793349,825,811,0.9830303,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.61,North Quincy,139,76,North Quincy,Red Line,Rapid Transit,No,0,0,N/A,348,329,0,0,348,329,0.9454023,348,329,0.9454023,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.62,Braintree,135,77,Braintree,Red Line,Rapid Transit,No,0,0,N/A,1177,1142,20,12,1197,1154,0.96407686,1177,1142,0.97026338,0,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.63,Green Street,118,79,Green Street,Orange Line,Rapid Transit,Yes,39,22,56%,39,22,0,0,39,22,0.56410256,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.64,Butler,136,80,Butler,Red Line,Rapid Transit,No,0,0,N/A,44,36,0,0,44,36,0.81818182,44,36,0.81818182,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.65,Mattapan,137,82,Mattapan,Red Line,Rapid Transit,No,0,0,N/A,209,31,0,0,209,31,0.14832536,209,31,0.14832536,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.66,Milton,138,83,Milton,Red Line,Rapid Transit,No,0,0,N/A,35,35,2,0,37,35,0.94594595,35,35,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.67,Wood Island,6,87,Wood Island,Blue Line,Rapid Transit,No,0,0,N/A,93,69,2,2,95,71,0.74736842,93,69,0.74193548,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.68,Manchester,107,88,Manchester,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,72,72,2,1,74,73,0.98648649,72,72,1,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.69,Gloucester,103,90,Gloucester,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,96,18,4,0,100,18,0.18,96,18,0.1875,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.70,West Gloucester,116,91,West Gloucester,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,42,8,1,0,43,8,0.18604651,42,8,0.19047619,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.71,Beverly Depot,101,92,Beverly Depot,Newburyport/Rockport,Commuter Rail ,Yes,38,38,100%,38,38,2,2,40,40,1,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.72,Beverly Depot,101,93,Beverly Depot,Newburyport/Rockport,Commuter Rail ,Yes,93,93,100%,93,93,3,1,96,94,0.97916667,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.73,Beverly Farms,102,94,Beverly Farms,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,60,30,0,0,60,30,0.5,60,30,0.5,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.74,Montserrat,108,95,Montserrat,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,112,45,5,1,117,46,0.39316239,112,45,0.40178571,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.75,Salem,114,96,Salem,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,700,366,12,7,712,373,0.5238764,700,366,0.52285714,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.76,Salem,114,97,Salem,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,65,64,4,0,69,64,0.92753623,65,64,0.98461539,0,Town,4,2017-2018
+ctps_pnr_lots_polygons.77,Lynn,106,98,Lynn,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,965,270,13,4,978,274,0.2801636,965,270,0.27979275,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.78,Plymouth,77,99,Plymouth,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,240,36,0,0,240,36,0.15,240,36,0.15,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.79,Whitman,79,100,Whitman,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,70,54,4,0,74,54,0.72972973,70,54,0.77142857,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.80,Whitman,79,101,Whitman,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,122,76,3,0,125,76,0.608,122,76,0.62295082,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.81,Halifax,74,102,Halifax,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,402,212,10,1,412,213,0.51699029,402,212,0.52736318,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.82,Hanson,75,103,Hanson,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,420,266,8,1,428,267,0.62383178,420,266,0.63333333,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.83,Kingston,76,104,Kingston,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,1008,479,22,1,1030,480,0.46601942,1008,479,0.47519841,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.84,South Weymouth,78,105,South Weymouth,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,539,381,9,1,548,382,0.69708029,539,381,0.70686456,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.85,Ipswich,105,106,Ipswich,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,18,18,0,0,18,18,1,18,18,1,0,On-Street,0,2017-2018
+ctps_pnr_lots_polygons.86,Swampscott,115,107,Swampscott,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,79,64,4,2,83,66,0.79518072,79,64,0.81012658,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.87,Swampscott,115,108,Swampscott,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,44,44,2,0,46,44,0.95652174,44,44,1,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.88,Swampscott,115,109,Swampscott,Newburyport/Rockport,Commuter Rail ,Yes,15,15,100%,15,15,0,0,15,15,1,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.89,Prides Crossing,111,114,Prides Crossing,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,8,7,0,0,8,7,0.875,8,7,0.875,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.90,Forest Hills,117,115,Forest Hills,Orange Line,Rapid Transit,No,0,0,N/A,150,145,5,5,155,150,0.96774194,150,145,0.96666667,6,Private,6,2017-2018
+ctps_pnr_lots_polygons.91,Malden,119,116,Malden Center,Orange Line,Rapid Transit,No,0,0,N/A,189,187,6,3,195,190,0.97435897,189,187,0.98941799,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.92,Nantasket Junction,56,117,Nantasket Junction,Greenbush,Commuter Rail ,No,0,0,N/A,481,98,9,0,490,98,0.2,481,98,0.2037422,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.93,Cohasset,53,118,Cohasset,Greenbush,Commuter Rail ,No,0,0,N/A,377,214,10,0,387,214,0.55297158,377,214,0.56763926,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.94,West Hingham,58,119,West Hingham,Greenbush,Commuter Rail ,No,0,0,N/A,224,156,7,1,231,157,0.67965368,224,156,0.69642857,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.95,Weymouth Landing,59,120,Weymouth Landing/East Braintree,Greenbush,Commuter Rail ,No,0,0,N/A,183,124,0,0,183,124,0.67759563,183,124,0.67759563,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.96,Weymouth Landing,59,121,Weymouth Landing/East Braintree,Greenbush,Commuter Rail ,No,0,0,N/A,9,8,13,1,22,9,0.40909091,9,8,0.88888889,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.97,Weymouth Landing,59,122,Weymouth Landing/East Braintree,Greenbush,Commuter Rail ,No,0,0,N/A,85,48,0,0,85,48,0.56470588,85,48,0.56470588,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.98,East Weymouth,54,123,East Weymouth,Greenbush,Commuter Rail ,No,0,0,N/A,327,305,8,0,335,305,0.91044776,327,305,0.93272171,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.99,North Scituate,57,124,North Scituate,Greenbush,Commuter Rail ,No,0,0,N/A,242,173,7,0,249,173,0.69477912,242,173,0.71487603,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.100,Greenbush,55,125,Greenbush,Greenbush,Commuter Rail ,No,0,0,N/A,978,229,22,12,1000,241,0.241,978,229,0.23415133,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.101,Wilmington,85,126,Wilmington,Lowell,Commuter Rail ,No,0,0,N/A,191,164,7,1,198,165,0.83333333,191,164,0.85863874,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.102,Winchester Center,86,127,Winchester,Lowell,Commuter Rail ,Yes,106,77,73%,106,77,0,0,106,77,0.72641509,0,0,0,0,Town,1,2017-2018
+ctps_pnr_lots_polygons.103,Winchester Center,86,128,Winchester,Lowell,Commuter Rail ,Yes,58,57,98%,58,57,1,0,59,57,0.9661017,0,0,0,3,Town,1,2017-2018
+ctps_pnr_lots_polygons.104,Wedgemere,83,129,Wedgemere,Lowell,Commuter Rail ,Yes,32,24,75%,32,24,0,0,32,24,0.75,0,0,0,0,On-Street,0,2017-2018
+ctps_pnr_lots_polygons.105,Wedgemere,83,130,Wedgemere,Lowell,Commuter Rail ,No,0,0,N/A,119,112,5,0,124,112,0.90322581,119,112,0.94117647,0,MBTA,1,2017-2018
+ctps_pnr_lots_polygons.106,West Medford,84,131,West Medford,Lowell,Commuter Rail ,Yes,45,40,89%,45,40,0,0,45,40,0.88888889,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.107,West Medford,84,132,West Medford,Lowell,Commuter Rail ,Yes,26,24,92%,26,24,2,0,28,24,0.85714286,0,0,0,2,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.129,Bradford,62,155,Bradford,Haverhill,Commuter Rail ,No,0,0,N/A,291,99,9,0,300,99,0.33,291,99,0.34020619,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.108,Forest Hills,117,133,Forest Hills,Orange Line,Rapid Transit,No,0,0,N/A,269,266,6,5,275,271,0.98545455,269,266,0.98884758,6,Private,8,2017-2018
+ctps_pnr_lots_polygons.109,Middleborough,91,134,Middleborough/Lakeville,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,756,457,13,1,769,458,0.59557867,756,457,0.60449735,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.110,Bridgewater,87,135,Bridgewater,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,489,301,10,0,499,301,0.60320641,489,301,0.61554192,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.111,Campello,89,136,Campello,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,541,168,11,0,552,168,0.30434783,541,168,0.31053604,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.112,Brockton,88,137,Brockton,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,245,108,8,6,253,114,0.45059289,245,108,0.44081633,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.113,Montello,92,138,Montello,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,323,111,8,0,331,111,0.33534743,323,111,0.34365325,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.114,Montello,92,139,Montello,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,76,42,4,0,80,42,0.525,76,42,0.55263158,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.115,Holbrook / Randolph,90,140,Holbrook/Randolph,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,236,148,8,0,244,148,0.60655738,236,148,0.62711864,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.116,Holbrook / Randolph,90,141,Holbrook/Randolph,Middleborough/Lakeville,Commuter Rail ,No,0,0,N/A,112,83,6,0,118,83,0.70338983,112,83,0.74107143,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.117,Readville,8,142,Readville,Fairmount,Commuter Rail ,No,0,0,N/A,122,86,0,0,122,86,0.70491803,122,86,0.70491803,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.118,Readville,8,143,Readville,Fairmount,Commuter Rail ,No,0,0,N/A,157,26,7,0,164,26,0.15853659,157,26,0.1656051,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.119,Readville,8,144,Readville,Fairmount,Commuter Rail ,No,0,0,N/A,59,9,8,0,67,9,0.13432836,59,9,0.15254237,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.120,Roslindale Village,99,145,Roslindale Willage,Needham,Commuter Rail ,No,0,0,N/A,47,18,0,0,47,18,0.38297872,47,18,0.38297872,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.121,Roslindale Village,99,146,Roslindale Willage,Needham,Commuter Rail ,No,0,0,N/A,92,45,4,0,96,45,0.46875,92,45,0.48913044,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.122,Route 128,130,147,Route 128,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,2528,1804,40,12,2568,1816,0.70716511,2528,1804,0.7136076,19,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.123,Sharon,131,148,Sharon,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,28,26,9,4,37,30,0.81081081,28,26,0.92857143,0,Town,4,2017-2018
+ctps_pnr_lots_polygons.124,Sharon,131,149,Sharon,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,199,190,7,2,206,192,0.93203884,199,190,0.95477387,0,Town,4,2017-2018
+ctps_pnr_lots_polygons.125,Auburndale,24,150,Auburndale,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,33,31,2,0,35,31,0.88571429,33,31,0.93939394,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.126,Auburndale,24,151,Auburndale,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,12,0,0,0,12,0,0,12,0,0,0,On-Street,0,2017-2018
+ctps_pnr_lots_polygons.127,Ballardvale,61,153,Ballardvale,Haverhill,Commuter Rail ,No,0,0,N/A,118,93,2,1,120,94,0.78333333,118,93,0.78813559,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.128,Bellevue,93,154,Bellevue,Needham,Commuter Rail ,No,0,0,N/A,35,35,2,0,37,35,0.94594595,35,35,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.130,Canton Center,125,157,Canton Center,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,211,160,4,0,215,160,0.74418605,211,160,0.75829384,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.131,Dedham Corp Center,36,158,Depham Corp Center,Franklin,Commuter Rail ,No,0,0,N/A,486,262,11,1,497,263,0.52917505,486,262,0.53909465,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.132,Endicott,37,159,Endicott,Franklin,Commuter Rail ,No,0,0,N/A,53,53,2,1,55,54,0.98181818,53,53,1,1,Town,0,2017-2018
+ctps_pnr_lots_polygons.133,Fairmount,7,160,Fairmount,Fairmount,Commuter Rail ,No,0,0,N/A,37,32,2,0,39,32,0.82051282,37,32,0.86486487,31,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.134,Forge Park,38,162,Forge Park,Franklin,Commuter Rail ,No,0,0,N/A,329,230,15,0,344,230,0.66860465,329,230,0.69908815,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.135,Forge Park,38,163,Forge Park,Franklin,Commuter Rail ,No,0,0,N/A,374,154,0,0,374,154,0.41176471,374,154,0.41176471,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.136,Grafton,26,164,Grafton,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,379,257,7,0,386,257,0.66580311,379,257,0.67810026,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.137,Franklin,39,165,Franklin,Franklin,Commuter Rail ,No,0,0,N/A,180,168,3,0,183,168,0.91803279,180,168,0.93333333,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.138,Franklin,39,166,Franklin,Franklin,Commuter Rail ,Yes,60,38,63%,60,38,2,0,62,38,0.61290323,0,0,0,0,Private,4,2017-2018
+ctps_pnr_lots_polygons.139,Islington,40,169,Islington,Franklin,Commuter Rail ,No,0,0,N/A,32,23,1,0,33,23,0.6969697,32,23,0.71875,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.140,Norfolk,41,171,Norfolk,Franklin,Commuter Rail ,No,0,0,N/A,67,67,11,1,78,68,0.87179487,67,67,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.141,Norfolk,41,172,Norfolk,Franklin,Commuter Rail ,No,0,0,N/A,194,194,0,0,194,194,1,194,194,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.142,Norwood Central,42,173,Norwood Central,Franklin,Commuter Rail ,No,0,0,N/A,68,67,2,0,70,67,0.95714286,68,67,0.98529412,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.143,Norwood Central,42,174,Norwood Central,Franklin,Commuter Rail ,No,0,0,N/A,699,490,12,2,711,492,0.69198312,699,490,0.70100143,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.144,Norwood Depot,43,175,Norwood Depot,Franklin,Commuter Rail ,No,0,0,N/A,175,84,5,0,180,84,0.46666667,175,84,0.48,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.145,Norwood Depot,43,176,Norwood Depot,Franklin,Commuter Rail ,No,0,0,N/A,39,2,0,0,39,2,0.05128205,39,2,0.05128205,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.146,Plimptonville,44,177,Plimptonville,Franklin,Commuter Rail ,No,0,0,N/A,5,1,0,0,5,1,0.2,5,1,0.2,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.147,Walpole,46,178,Walpole,Franklin,Commuter Rail ,No,0,0,N/A,77,77,4,1,81,78,0.96296296,77,77,1,1,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.148,Walpole,46,179,Walpole,Franklin,Commuter Rail ,No,0,0,N/A,64,64,0,0,64,64,1,64,64,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.149,Walpole,46,181,Walpole,Franklin,Commuter Rail ,No,0,0,N/A,200,200,0,0,200,200,1,200,200,1,1,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.150,Walpole,46,182,Walpole,Franklin,Commuter Rail ,No,0,0,N/A,97,0,0,0,97,0,0,97,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.151,Walpole,46,183,Walpole,Franklin,Commuter Rail ,No,0,0,N/A,41,41,0,0,41,41,1,41,41,1,3,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.152,Haverhill,64,184,Haverhill,Haverhill,Commuter Rail ,No,0,0,N/A,144,120,6,2,150,122,0.81333333,144,120,0.83333333,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.153,Lawrence,65,186,Lawrence,Haverhill,Commuter Rail ,No,0,0,N/A,745,450,14,2,759,452,0.59552042,745,450,0.60402685,0,Town,8,2017-2018
+ctps_pnr_lots_polygons.154,North Wilmington,68,187,North Wilmington,Haverhill,Commuter Rail ,No,0,0,N/A,50,48,3,0,53,48,0.90566038,50,48,0.96,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.155,Greenwood,63,188,Greenwood,Haverhill,Commuter Rail ,No,0,0,N/A,6,6,0,0,6,6,1,6,6,1,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.156,Greenwood,63,189,Greenwood,Haverhill,Commuter Rail ,No,0,0,N/A,76,66,2,0,78,66,0.84615385,76,66,0.86842105,0,Town,2,2017-2018
+ctps_pnr_lots_polygons.157,Melrose Highlands,67,191,Melrose Highland,Haverhill,Commuter Rail ,No,0,0,N/A,65,63,2,1,67,64,0.95522388,65,63,0.96923077,0,MBTA,3,2017-2018
+ctps_pnr_lots_polygons.158,Melrose Cedar Park,66,193,Melrose Cedar Park,Haverhill,Commuter Rail ,No,0,0,N/A,79,40,3,0,82,40,0.48780488,79,40,0.50632911,0,Town,3,2017-2018
+ctps_pnr_lots_polygons.159,Wyoming Hill,71,194,Wyoming Hill,Haverhill,Commuter Rail ,No,0,0,N/A,32,28,1,0,33,28,0.84848485,32,28,0.875,0,Town,3,2017-2018
+ctps_pnr_lots_polygons.160,Reading,69,195,Reading,Haverhill,Commuter Rail ,Yes,58,58,100%,58,58,1,0,59,58,0.98305085,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.161,Reading,69,196,Reading,Haverhill,Commuter Rail ,Yes,109,109,100%,109,109,6,2,115,111,0.96521739,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.162,Reading,69,197,Reading,Haverhill,Commuter Rail ,No,0,0,N/A,71,64,0,0,71,64,0.90140845,71,64,0.90140845,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.163,Reading,69,198,Reading,Haverhill,Commuter Rail ,Yes,102,86,84%,102,86,5,0,107,86,0.80373832,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.164,Reading,69,199,Reading,Haverhill,Commuter Rail ,Yes,42,39,93%,42,39,0,0,42,39,0.92857143,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.165,Wakefield,70,200,Wakefield,Haverhill,Commuter Rail ,No,0,0,N/A,76,76,3,1,79,77,0.97468354,76,76,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.166,Wakefield,70,201,Wakefield,Haverhill,Commuter Rail ,No,0,0,N/A,34,33,3,1,37,34,0.91891892,34,33,0.97058824,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.167,Framingham,25,202,Framingham,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,63,63,6,0,69,63,0.91304348,63,63,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.168,Framingham,25,203,Framingham,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,36,36,6,3,42,39,0.92857143,36,36,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.169,Framingham,25,204,Framingham,Framingham/Worcester,Commuter Rail ,Yes,67,48,72%,67,48,3,1,70,49,0.7,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.170,Framingham,25,205,Framingham,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,65,40,4,0,69,40,0.57971015,65,40,0.61538462,0,Town,5,2017-2018
+ctps_pnr_lots_polygons.171,West Natick,33,206,West Natick,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,172,172,6,1,178,173,0.97191011,172,172,1,2,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.172,Westborough,35,207,Westborough,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,440,430,8,0,448,430,0.95982143,440,430,0.97727273,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.173,Wellesley Square,32,208,Wellesley Square,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,222,138,2,0,224,138,0.61607143,222,138,0.62162162,0,Town,6,2017-2018
+ctps_pnr_lots_polygons.216,Providence,129,257,Providence,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,340,333,4,2,344,335,0.97383721,340,333,0.97941177,0,MBTA,15,2017-2018
+ctps_pnr_lots_polygons.174,West Newton,34,211,West Newton,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,155,82,6,0,161,82,0.50931677,155,82,0.52903226,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.175,West Newton,34,212,West Newton,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,42,41,3,0,45,41,0.91111111,42,41,0.97619048,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.176,Needham Heights,96,213,Needham Heights,Needham,Commuter Rail ,No,0,0,N/A,14,14,0,0,14,14,1,14,14,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.177,Needham Heights,96,214,Needham Heights,Needham,Commuter Rail ,No,0,0,N/A,82,49,3,0,85,49,0.57647059,82,49,0.59756098,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.178,Needham Center,97,216,Needham Center,Needham,Commuter Rail ,Yes,0,0,N/A,0,0,0,0,0,0,0,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.179,Needham Junction,98,217,Needham Junction,Needham,Commuter Rail ,No,0,0,N/A,49,49,0,0,49,49,1,49,49,1,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.180,Needham Junction,98,218,Needham Junction,Needham,Commuter Rail ,No,0,0,N/A,20,19,0,0,20,19,0.95,20,19,0.95,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.181,Needham Junction,98,219,Needham Junction,Needham,Commuter Rail ,No,0,0,N/A,56,48,4,3,60,51,0.85,56,48,0.85714286,0,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.204,Oak Grove,120,244,Oak Grove,Orange Line,Rapid Transit,Yes,34,23,68%,34,23,2,0,36,23,0.63888889,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.182,Hersey,94,220,Hersey,Needham,Commuter Rail ,No,0,0,N/A,175,174,0,0,175,174,0.99428571,175,174,0.99428571,7,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.183,Hersey,94,221,Hersey,Needham,Commuter Rail ,No,0,0,N/A,134,134,0,0,134,134,1,134,134,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.184,West Roxbury,100,222,West Roxbury,Needham,Commuter Rail ,No,0,0,N/A,60,55,2,0,62,55,0.88709677,60,55,0.91666667,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.185,Highland,95,223,Highland,Needham,Commuter Rail ,No,0,0,N/A,169,115,6,1,175,116,0.66285714,169,115,0.68047337,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.186,Stoughton,133,224,Stoughton,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,78,49,0,0,78,49,0.62820513,78,49,0.62820513,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.187,Stoughton,133,225,Stoughton,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,93,89,4,1,97,90,0.92783505,93,89,0.95698925,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.188,Stoughton,133,226,Stoughton,Providence/Stoughton,Commuter Rail ,Yes,63,21,33%,63,21,0,0,63,21,0.33333333,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.189,Stoughton,133,227,Stoughton,Providence/Stoughton,Commuter Rail ,Yes,74,46,62%,74,46,0,0,74,46,0.62162162,0,0,0,0,Private,4,2017-2018
+ctps_pnr_lots_polygons.190,Stoughton,133,228,Stoughton,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,85,59,0,0,85,59,0.69411765,85,59,0.69411765,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.191,Stoughton,133,229,Stoughton,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,60,52,6,0,66,52,0.78787879,60,52,0.86666667,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.192,Canton Junction,126,230,Canton Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,152,63,0,0,152,63,0.41447368,152,63,0.41447368,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.193,Canton Junction,126,231,Canton Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,286,242,6,0,292,242,0.82876712,286,242,0.84615385,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.194,Canton Junction,126,232,Canton Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,246,246,5,0,251,246,0.98007968,246,246,1,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.195,Canton Junction,126,233,Canton Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,67,60,0,0,67,60,0.89552239,67,60,0.89552239,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.196,Canton Junction,126,234,Canton Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,174,113,0,0,174,113,0.64942529,174,113,0.64942529,0,Private,3,2017-2018
+ctps_pnr_lots_polygons.197,Woburn Bus Yard,353,235,Woburn Bus Yard,Route 345/345 Express Bus,Bus,No,0,0,N/A,67,66,2,0,69,66,0.95652174,67,66,0.98507463,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.198,Newtonville,28,237,Newtonville,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,80,68,0,0,80,68,0.85,80,68,0.85,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.199,Newtonville,28,238,Newtonville,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,49,20,0,0,49,20,0.40816327,49,20,0.40816327,0,Town,4.5,2017-2018
+ctps_pnr_lots_polygons.200,South Attleboro,132,239,South Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,352,347,13,8,365,355,0.97260274,352,347,0.98579546,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.201,South Attleboro,132,240,South Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,214,212,0,0,214,212,0.99065421,214,212,0.99065421,3,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.202,Hyde Park,127,241,Hyde Park,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,117,81,4,0,121,81,0.66942149,117,81,0.69230769,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.203,Oak Grove,120,243,Oak Grove,Orange Line,Rapid Transit,No,0,0,N/A,542,520,11,8,553,528,0.95479204,542,520,0.95940959,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.205,Oak Grove,120,245,Oak Grove,Orange Line,Rapid Transit,No,0,0,N/A,140,135,0,0,140,135,0.96428571,140,135,0.96428571,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.206,Sullivan Square,121,246,Sullivan Square,Orange Line,Rapid Transit,No,0,0,N/A,227,219,7,0,234,219,0.93589744,227,219,0.96475771,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.207,Sullivan Square,121,247,Sullivan Square,Orange Line,Rapid Transit,No,0,0,N/A,178,164,0,0,178,164,0.92134832,178,164,0.92134832,0,Private,6,2017-2018
+ctps_pnr_lots_polygons.208,Sullivan Square,121,248,Sullivan Square,Orange Line,Rapid Transit,No,0,0,N/A,164,22,0,0,164,22,0.13414634,164,22,0.13414634,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.209,South Acton,20,249,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,150,145,97%,150,145,7,2,157,147,0.93630573,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.210,South Acton,20,250,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,26,26,100%,26,26,1,0,27,26,0.96296296,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.211,South Acton,20,251,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,31,21,68%,31,21,0,0,31,21,0.67741936,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.212,South Acton,20,252,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,43,14,33%,43,14,0,0,43,14,0.3255814,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.213,Ayer,9,253,Ayer,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,19,19,1,0,20,19,0.95,19,19,1,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.214,Kingston,76,254,Kingston,Kingston/Plymouth,Commuter Rail ,Yes,171,84,49%,171,84,4,2,175,86,0.49142857,0,0,0,0,Private,50,2017-2018
+ctps_pnr_lots_polygons.215,Sharon,131,255,Sharon,Providence/Stoughton,Commuter Rail ,Yes,500,404,81%,500,404,2,0,502,404,0.80478088,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.217,Wellington,122,258,Wellington,Orange Line,Rapid Transit,No,0,0,N/A,712,251,8,0,720,251,0.34861111,712,251,0.35252809,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.218,Wellington,122,259,Wellington,Orange Line,Rapid Transit,No,0,0,N/A,1071,1068,20,11,1091,1079,0.98900092,1071,1068,0.99719888,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.219,Wellington,122,260,Wellington,Orange Line,Rapid Transit,No,0,0,N/A,235,224,0,0,235,224,0.95319149,235,224,0.95319149,0,MBTA,6,2017-2018
+ctps_pnr_lots_polygons.220,Wellington,122,261,Wellington,Orange Line,Rapid Transit,No,0,0,N/A,165,160,1,1,166,161,0.96987952,165,160,0.96969697,0,Private,6,2017-2018
+ctps_pnr_lots_polygons.221,Wonderland,5,262,Wonderland,Blue Line,Rapid Transit,No,0,0,N/A,465,457,11,8,476,465,0.97689076,465,457,0.9827957,8,Private,5,2017-2018
+ctps_pnr_lots_polygons.222,Wonderland,5,263,Wonderland,Blue Line,Rapid Transit,No,0,0,N/A,135,132,8,1,143,133,0.93006993,135,132,0.97777778,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.223,Wonderland,5,264,Wonderland,Blue Line,Rapid Transit,No,0,0,N/A,231,150,0,0,231,150,0.64935065,231,150,0.64935065,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.224,Hingham,72,266,Hingham,Hingham Shipyard to Rowes Wharf,Ferry,No,0,0,N/A,1697,1128,29,4,1726,1132,0.65585168,1697,1128,0.66470242,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.225,Hingham,72,265,Hingham,Hingham Shipyard to Rowes Wharf,Ferry,No,0,0,N/A,296,166,7,5,303,171,0.56435644,296,166,0.56081081,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.226,Hull,308,268,Hull,"Pemberton Point, Hull to Long Wharf, Boston",Ferry,Yes,128,119,93%,128,119,3,1,131,120,0.91603053,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.227,Watertown Yard,320,269,Watertown Yard,Route 345/345 Express Bus,Bus,No,0,0,N/A,194,135,0,0,194,135,0.69587629,194,135,0.69587629,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.228,Quincy Adams,176,270,Quincy Adam,Red Line,Rapid Transit,No,0,0,N/A,160,155,0,0,160,155,0.96875,160,155,0.96875,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.229,Worcester,145,271,Worcester,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,34,32,8,6,42,38,0.90476191,34,32,0.94117647,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.230,Worcester,145,273,Worcester,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,81,81,0,0,81,81,1,81,81,1,0,Town,3,2017-2018
+ctps_pnr_lots_polygons.231,Worcester,145,272,Worcester,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,500,312,9,9,509,321,0.63064833,500,312,0.624,0,MBTA,4.5,2017-2018
+ctps_pnr_lots_polygons.232,Mansfield,128,275,Mansfield,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,204,204,0,0,204,204,1,204,204,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.233,Mansfield,128,276,Mansfield,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,63,62,0,0,63,62,0.98412698,63,62,0.98412698,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.234,Mansfield,128,277,Mansfield,Providence/Stoughton,Commuter Rail ,Yes,350,266,76%,350,266,0,0,350,266,0.76,0,0,0,4,Private,10,2017-2018
+ctps_pnr_lots_polygons.235,Mansfield,128,278,Mansfield,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,210,209,0,0,210,209,0.9952381,210,209,0.9952381,0,Town,4,2017-2018
+ctps_pnr_lots_polygons.236,Mansfield,128,279,Mansfield,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,190,188,0,0,190,188,0.98947368,190,188,0.98947368,0,Private,7,2017-2018
+ctps_pnr_lots_polygons.237,Mansfield,128,280,Mansfield,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,0,0,0,0,0,0,0,0,0,0,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.238,Mansfield,128,281,Mansfield,Providence/Stoughton,Commuter Rail ,Yes,73,72,99%,73,72,2,1,75,73,0.97333333,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.239,Hull,308,283,Hull,"Pemberton Point, Hull to Long Wharf, Boston",Ferry,Yes,41,40,98%,41,40,0,0,41,40,0.97560976,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.260,Framingham,25,311,Framingham,Framingham/Worcester,Commuter Rail ,Yes,289,42,15%,289,42,5,0,294,42,0.14285714,0,0,0,0,Town,65,2017-2018
+ctps_pnr_lots_polygons.240,North Billerica,82,284,North Billerica,Lowell,Commuter Rail ,No,0,0,N/A,563,520,12,2,575,522,0.90782609,563,520,0.92362345,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.241,Lowell,81,285,Lowell,Lowell,Commuter Rail ,No,0,0,N/A,866,597,19,4,885,601,0.67909605,866,597,0.68937644,0,MBTA,7,2017-2018
+ctps_pnr_lots_polygons.242,Wonderland,5,291,Wonderland,Blue Line,Rapid Transit,No,0,0,N/A,1417,1240,19,9,1436,1249,0.86977716,1417,1240,0.87508822,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.243,Suffolk Downs ,4,292,Suffolk Downs,Blue Line,Rapid Transit,No,0,0,N/A,104,94,4,1,108,95,0.87962963,104,94,0.90384615,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.244,Norwood Central ,42,293,Norwood Central,Franklin,Commuter Rail ,No,0,0,N/A,24,18,0,0,24,18,0.75,24,18,0.75,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.245,Providence,129,294,Providence,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,190,77,2,0,192,77,0.40104167,190,77,0.40526316,0,Private,18,2017-2018
+ctps_pnr_lots_polygons.246,Providence,129,295,Providence,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,139,71,2,0,141,71,0.5035461,139,71,0.51079137,0,Private,18,2017-2018
+ctps_pnr_lots_polygons.247,Wickford Junction ,304,296,Wickford Junction,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,1077,311,23,1,1100,312,0.28363636,1077,311,0.28876509,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.248,South Attleboro,132,297,South Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,213,126,0,0,213,126,0.5915493,213,126,0.5915493,0,Private,6,2017-2018
+ctps_pnr_lots_polygons.249,TF Green Airport,272,298,TF Green,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,591,58,25,0,616,58,0.09415584,591,58,0.09813875,0,Private,5,2017-2018
+ctps_pnr_lots_polygons.250,Green Street,118,299,Green Street,Orange Line,Rapid Transit,Yes,45,27,60%,45,27,0,0,45,27,0.6,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.251,Malden,119,300,Malden Center,Orange Line,Rapid Transit,No,0,0,N/A,639,416,10,2,649,418,0.6440678,639,416,0.65101721,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.252,Morton St. ,268,301,Morton Street,Fairmount,Commuter Rail ,No,0,0,N/A,0,0,1,0,1,0,0,0,0,0,0,MBTA,0,2017-2018
+ctps_pnr_lots_polygons.253,Framingham,25,302,Framingham,Framingham/Worcester,Commuter Rail ,Yes,52,37,71%,52,37,0,0,52,37,0.71153846,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.254,Norfolk,41,303,Norfolk,Franklin,Commuter Rail ,No,0,0,N/A,358,245,0,0,358,245,0.68435754,358,245,0.68435754,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.255,Attleboro,124,304,Attleboro,Providence/Stoughton,Commuter Rail ,No,0,0,N/A,79,79,4,2,83,81,0.97590361,79,79,1,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.256,Oak Grove ,120,305,Oak Grove,Orange Line,Rapid Transit,Yes,72,56,78%,72,56,0,0,72,56,0.77777778,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.257,South Acton,20,306,South Acton,Fitchburg/South Acton,Commuter Rail ,Yes,48,5,10%,48,5,0,0,48,5,0.10416667,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.258,Bradford,62,307,Bradford,Haverhill,Commuter Rail ,Yes,26,17,65%,26,17,0,0,26,17,0.65384615,0,0,0,0,Private,0,2017-2018
+ctps_pnr_lots_polygons.259,Assembly,322,308,Assembly,Orange Line,Rapid Transit,No,0,0,N/A,350,294,12,0,362,294,0.8121547,350,294,0.84,0,Private,8,2017-2018
+ctps_pnr_lots_polygons.261,Framingham,25,322,Framingham,Framingham/Worcester,Commuter Rail ,No,0,0,N/A,177,177,6,0,183,177,0.96721312,177,177,1,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.262,Belmont,10,317,Belmont,Fitchburg/South Acton,Commuter Rail ,Yes,9,3,33%,9,3,1,0,10,3,0.3,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.263,Plymouth,77,313,Plymouth,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,92,0,4,0,96,0,0,92,0,0,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.264,South Weymouth,78,314,South Weymouth,Kingston/Plymouth,Commuter Rail ,No,0,0,N/A,84,34,4,1,88,35,0.39772727,84,34,0.40476191,0,MBTA,2,2017-2018
+ctps_pnr_lots_polygons.265,Beverly Depot,101,318,Beverly Depot,Newburyport/Rockport,Commuter Rail ,No,0,0,N/A,483,302,11,0,494,302,0.61133603,483,302,0.6252588,0,MBTA,5,2017-2018
+ctps_pnr_lots_polygons.266,Haverhill,64,319,Haverhill,Haverhill,Commuter Rail ,No,0,0,N/A,400,150,4,4,404,154,0.38118812,400,150,0.375,0,MBTA,4,2017-2018
+ctps_pnr_lots_polygons.267,Four Corners/Geneva Ave,328,310,Four Corners/Geneva Ave,Fairmount,Commuter Rail ,No,0,0,N/A,3,0,1,0,4,0,0,3,0,0,0,MBTA,0,2017-2018
+ctps_pnr_lots_polygons.268,Uphams Corner,269,316,Uphams Corner,Fairmount,Commuter Rail ,No,0,0,N/A,2,0,2,0,4,0,0,2,0,0,0,MBTA,0,2017-2018
+ctps_pnr_lots_polygons.269,Newmarket,333,312,Newmarket,Fairmount,Commuter Rail ,No,0,0,N/A,0,0,2,2,2,2,1,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.270,Talbot Avenue,339,315,Talbot Ave,Fairmount,Commuter Rail ,No,0,0,N/A,1,0,2,0,3,0,0,1,0,0,1,MBTA,0,2017-2018
+ctps_pnr_lots_polygons.271,Attleboro,124,309,Attleboro,Providence/Stoughton,Commuter Rail ,Yes,150,77,51%,150,77,0,0,150,77,0.51333333,0,0,0,0,Town,0,2017-2018
+ctps_pnr_lots_polygons.272,Wachusett,340,321,Wachusett,Fitchburg/South Acton,Commuter Rail ,No,0,0,N/A,351,85,8,2,359,87,0.24233983,351,85,0.24216524,0,MBTA,3,2017-2018
