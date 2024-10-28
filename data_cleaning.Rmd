@@ -14,15 +14,36 @@ This script will house any data cleaning processes to go from raw data to model-
 ## MBTA ridership data
 
 ```{r}
-# these links are csv download URLs from the MBTA open data portal: https://mbta-massdot.opendata.arcgis.com/search?q=rail%20ridership%20by%20time%20period 
+# these data come from the MBTA open data portal. Link for humans: https://mbta-massdot.opendata.arcgis.com/search?q=rail%20ridership%20by%20time%20period 
 
 ridership_f23 <- read.csv('https://hub.arcgis.com/api/v3/datasets/80a379ebaa374cfd836ca4d3880ceda4_0/downloads/data?format=csv&spatialRefId=4326&where=1%3D1')
 
-ridership_f17_to_f19 <- read.csv('https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-14836-5882/Rail_Ridership_by_Season_Time_Period_RouteLine_and_Stop_5316095790925663588.csv?sv=2018-03-28&sr=b&sig=a5cGSNkFf5LbnYdFG8CUOu2Xs1QjjTWcOhcTaGDDmrI%3D&se=2024-10-21T23%3A56%3A19Z&sp=r')
+ridership_f17_to_f19 <- read.csv('data/rail_ridership_stops_F17toF19.csv')
+```
 
-# I am not sure whether these URLs are stable - time will tell.
+```{r}
+f23_clean <- ridership_f23 %>% 
+  group_by(season, route_id, stop_name, parent_station) %>%
+  summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
+  mutate(
+    avg_boardings = total_ons/number_service_days, 
+    avg_alightings = total_offs/number_service_days,
+    .keep='unused'
+    )
 
-# TODO: save cleaned files with fall 2023 and fall 2019 ridership with the variables we want to keep
+f19_clean <- ridership_f17_to_f19 %>% 
+  filter(season=='Fall 2019') %>% 
+  mutate(parent_station = stop_id) %>%
+  group_by(season, route_id, stop_name, parent_station) %>%
+  summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
+  mutate(
+    avg_boardings = total_ons/number_service_days, 
+    avg_alightings = total_offs/number_service_days,
+    .keep='unused'
+    )
+
+f19_clean %>% rbind(f23_clean) %>% 
+  write.csv('data/rail_ridership_stops_clean_F19andF23.csv')
 ```
 
 For travel times and headways, we can either use schedules (reflecting "promised" service) or actual service. For schedules, we just need the GTFS. For actuals, we need GTFS and the travel time and headway datasets described below.
