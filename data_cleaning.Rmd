@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(tidytransit)
 ```
 
 This script will house any data cleaning processes to go from raw data to model-ready intermediate outputs. These processes are in their own script file so that we don't want to do them every time we build a model.
@@ -46,6 +47,53 @@ f19_clean %>% rbind(f23_clean) %>%
   write.csv('data/rail_ridership_stops_clean_F19andF23.csv')
 ```
 
+## MBTA GTFS
+
+If we use actual travel times and headways, the only GTFS data we need is the association between stop IDs and stop names (aka parent stations).
+
+If we would prefer scheduled travel times and headways, we would need to calculate average headways per stop from the information in the GTFS file.
+
+Either way, we will also want to grab the lat/long coordinates for each stop from GTFS. GTFS is also probably the best source for calculating the number (and names) of bus routes that serve a given RT station. 
+
+MBTA GTFS recap link: https://www.arcgis.com/home/item.html?id=9ab1dc7ea2bf4ad7b7e25cc6b941b39a
+
+```{r}
+f23_gtfs <- read_gtfs(path.expand('~/Data/GTFS pre-rating-recaps/2023-fall-prerating-recap.zip'))
+f19_gtfs <- read_gtfs(path.expand('~/Data/GTFS pre-rating-recaps/2019-fall-prerating-recap.zip'))
+```
+
+# select stops from stop_times on trips belonging to Rapid Transit routes
+```{r}
+rt_stations_per_route <- function(gtfs) { 
+  gtfs$routes %>%
+  filter(route_desc == 'Rapid Transit') %>% # filter to Rapid Transit routes
+  inner_join(gtfs$trips, by='route_id') %>%
+  inner_join(gtfs$calendar_attributes, by='service_id') %>%
+  filter(service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
+  mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
+  inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
+  filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
+  inner_join(gtfs$stop_times, by='trip_id') %>%
+  inner_join(gtfs$stops, by='stop_id') %>%
+  select(route_id, route_long_name, parent_station) %>%
+  # this second join to the stops table is so that we use the parent station IDs and their more
+  # generalized coordinates instead of the more specific coordinates of each platform
+  inner_join(gtfs$stops, by=join_by(parent_station==stop_id)) %>%
+  select(route_id, route_long_name, parent_station, stop_name, stop_lat, stop_lon) %>%
+  unique() # this selection lists each stop once per route they serve
+}
+
+rt_stations_f23 <- rt_stations_per_route(f23_gtfs)
+rt_stations_f19 <- rt_stations_per_route(f19_gtfs)
+rt_stations_f23
+```
+
+```{r}
+rt_stations_f23 %>% write.csv('data/rapid_transit_stations_by_line_f23.csv', row.names=FALSE)
+rt_stations_f19 %>% write.csv('data/rapid_transit_stations_by_line_f19.csv', row.names=FALSE)
+```
+
+
 For travel times and headways, we can either use schedules (reflecting "promised" service) or actual service. For schedules, we just need the GTFS. For actuals, we need GTFS and the travel time and headway datasets described below.
 
 ## MBTA Rapid Transit Travel Times
@@ -66,15 +114,7 @@ This is a very large dataset that will require us to:
 2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/896d043f33ae4915b530df12141c772c_0/explore
 2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/5c36245a6e7f4b89851b99a4a2bce02b_0/explore
 
-## MBTA GTFS
 
-If we use actual travel times and headways, the only GTFS data we need is the association between stop IDs and stop names (aka parent stations).
-
-If we would prefer scheduled travel times and headways, we would need to calculate average headways per stop from the information in the GTFS file.
-
-Either way, we will also want to grab the lat/long coordinates for each stop from GTFS. GTFS is also probably the best source for calculating the number (and names) of bus routes that serve a given RT station. 
-
-MBTA GTFS recap link: https://mbta-massdot.opendata.arcgis.com/datasets/9ab1dc7ea2bf4ad7b7e25cc6b941b39a/about
 
 ## CTPS park-and-ride inventory for MBTA stations
 

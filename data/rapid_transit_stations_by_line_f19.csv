@@ -1,0 +1,149 @@
+"route_id","route_long_name","parent_station","stop_name","stop_lat","stop_lon"
+"Red","Red Line","place-alfcl","Alewife",42.395428,-71.142483
+"Red","Red Line","place-davis","Davis",42.39674,-71.121815
+"Red","Red Line","place-portr","Porter",42.3884,-71.119149
+"Red","Red Line","place-harsq","Harvard",42.373362,-71.118956
+"Red","Red Line","place-cntsq","Central",42.365486,-71.103802
+"Red","Red Line","place-knncl","Kendall/MIT",42.362491,-71.086177
+"Red","Red Line","place-chmnl","Charles/MGH",42.361166,-71.070628
+"Red","Red Line","place-pktrm","Park Street",42.356395,-71.062424
+"Red","Red Line","place-dwnxg","Downtown Crossing",42.355518,-71.060225
+"Red","Red Line","place-sstat","South Station",42.352271,-71.055242
+"Red","Red Line","place-brdwy","Broadway",42.342622,-71.056967
+"Red","Red Line","place-andrw","Andrew",42.330154,-71.057655
+"Red","Red Line","place-jfk","JFK/UMass",42.320685,-71.052391
+"Red","Red Line","place-shmnl","Savin Hill",42.31129,-71.053331
+"Red","Red Line","place-fldcr","Fields Corner",42.300093,-71.061667
+"Red","Red Line","place-smmnl","Shawmut",42.293126,-71.065738
+"Red","Red Line","place-asmnl","Ashmont",42.284652,-71.064489
+"Red","Red Line","place-nqncy","North Quincy",42.275275,-71.029583
+"Red","Red Line","place-wlsta","Wollaston",42.266514,-71.020337
+"Red","Red Line","place-qnctr","Quincy Center",42.251809,-71.005409
+"Red","Red Line","place-qamnl","Quincy Adams",42.233391,-71.007153
+"Red","Red Line","place-brntn","Braintree",42.207854,-71.001138
+"Mattapan","Mattapan Trolley","place-asmnl","Ashmont",42.284652,-71.064489
+"Mattapan","Mattapan Trolley","place-cedgr","Cedar Grove",42.279682,-71.060432
+"Mattapan","Mattapan Trolley","place-butlr","Butler",42.272343,-71.062584
+"Mattapan","Mattapan Trolley","place-miltt","Milton",42.270306,-71.067673
+"Mattapan","Mattapan Trolley","place-cenav","Central Avenue",42.270027,-71.073334
+"Mattapan","Mattapan Trolley","place-valrd","Valley Road",42.268322,-71.081566
+"Mattapan","Mattapan Trolley","place-capst","Capen Street",42.267712,-71.087753
+"Mattapan","Mattapan Trolley","place-matt","Mattapan",42.267762,-71.092241
+"Orange","Orange Line","place-ogmnl","Oak Grove",42.43668,-71.071097
+"Orange","Orange Line","place-mlmnl","Malden Center",42.426632,-71.07411
+"Orange","Orange Line","place-welln","Wellington",42.40237,-71.077082
+"Orange","Orange Line","place-astao","Assembly",42.392811,-71.077257
+"Orange","Orange Line","place-sull","Sullivan Square",42.383975,-71.076994
+"Orange","Orange Line","place-ccmnl","Community College",42.373622,-71.069533
+"Orange","Orange Line","place-north","North Station",42.365577,-71.06129
+"Orange","Orange Line","place-haecl","Haymarket",42.363021,-71.05829
+"Orange","Orange Line","place-state","State",42.358978,-71.057598
+"Orange","Orange Line","place-dwnxg","Downtown Crossing",42.355518,-71.060225
+"Orange","Orange Line","place-chncl","Chinatown",42.352547,-71.062752
+"Orange","Orange Line","place-tumnl","Tufts Medical Center",42.349662,-71.063917
+"Orange","Orange Line","place-bbsta","Back Bay",42.34735,-71.075727
+"Orange","Orange Line","place-masta","Massachusetts Avenue",42.341512,-71.083423
+"Orange","Orange Line","place-rugg","Ruggles",42.336377,-71.088961
+"Orange","Orange Line","place-rcmnl","Roxbury Crossing",42.331397,-71.095451
+"Orange","Orange Line","place-jaksn","Jackson Square",42.323132,-71.099592
+"Orange","Orange Line","place-sbmnl","Stony Brook",42.317062,-71.104248
+"Orange","Orange Line","place-grnst","Green Street",42.310525,-71.107414
+"Orange","Orange Line","place-forhl","Forest Hills",42.300523,-71.113686
+"Green-B","Green Line B","place-pktrm","Park Street",42.356395,-71.062424
+"Green-B","Green Line B","place-boyls","Boylston",42.35302,-71.06459
+"Green-B","Green Line B","place-armnl","Arlington",42.351902,-71.070893
+"Green-B","Green Line B","place-coecl","Copley",42.349974,-71.077447
+"Green-B","Green Line B","place-hymnl","Hynes Convention Center",42.347888,-71.087903
+"Green-B","Green Line B","place-kencl","Kenmore",42.348949,-71.095169
+"Green-B","Green Line B","place-bland","Blandford Street",42.349293,-71.100258
+"Green-B","Green Line B","place-buest","Boston University East",42.349735,-71.103889
+"Green-B","Green Line B","place-bucen","Boston University Central",42.350082,-71.106865
+"Green-B","Green Line B","place-buwst","Boston University West",42.350941,-71.113876
+"Green-B","Green Line B","place-stplb","Saint Paul Street",42.3512,-71.116104
+"Green-B","Green Line B","place-plsgr","Pleasant Street",42.351521,-71.118889
+"Green-B","Green Line B","place-babck","Babcock Street",42.35182,-71.12165
+"Green-B","Green Line B","place-brico","Packards Corner",42.351967,-71.125031
+"Green-B","Green Line B","place-harvd","Harvard Avenue",42.350243,-71.131355
+"Green-B","Green Line B","place-grigg","Griggs Street",42.348545,-71.134949
+"Green-B","Green Line B","place-alsgr","Allston Street",42.348701,-71.137955
+"Green-B","Green Line B","place-wrnst","Warren Street",42.348343,-71.140457
+"Green-B","Green Line B","place-wascm","Washington Street",42.343864,-71.142853
+"Green-B","Green Line B","place-sthld","Sutherland Road",42.341614,-71.146202
+"Green-B","Green Line B","place-chswk","Chiswick Road",42.340805,-71.150711
+"Green-B","Green Line B","place-chill","Chestnut Hill Avenue",42.338169,-71.15316
+"Green-B","Green Line B","place-sougr","South Street",42.3396,-71.157661
+"Green-B","Green Line B","place-lake","Boston College",42.340081,-71.166769
+"Green-C","Green Line C","place-north","North Station",42.365577,-71.06129
+"Green-C","Green Line C","place-haecl","Haymarket",42.363021,-71.05829
+"Green-C","Green Line C","place-gover","Government Center",42.359705,-71.059215
+"Green-C","Green Line C","place-pktrm","Park Street",42.356395,-71.062424
+"Green-C","Green Line C","place-boyls","Boylston",42.35302,-71.06459
+"Green-C","Green Line C","place-armnl","Arlington",42.351902,-71.070893
+"Green-C","Green Line C","place-coecl","Copley",42.349974,-71.077447
+"Green-C","Green Line C","place-hymnl","Hynes Convention Center",42.347888,-71.087903
+"Green-C","Green Line C","place-kencl","Kenmore",42.348949,-71.095169
+"Green-C","Green Line C","place-smary","Saint Marys Street",42.345974,-71.107353
+"Green-C","Green Line C","place-hwsst","Hawes Street",42.344906,-71.111145
+"Green-C","Green Line C","place-kntst","Kent Street",42.344074,-71.114197
+"Green-C","Green Line C","place-stpul","Saint Paul Street",42.343327,-71.116997
+"Green-C","Green Line C","place-cool","Coolidge Corner",42.342116,-71.121263
+"Green-C","Green Line C","place-sumav","Summit Avenue",42.34111,-71.12561
+"Green-C","Green Line C","place-bndhl","Brandon Hall",42.340023,-71.129082
+"Green-C","Green Line C","place-fbkst","Fairbanks Street",42.339725,-71.131073
+"Green-C","Green Line C","place-bcnwa","Washington Square",42.339394,-71.13533
+"Green-C","Green Line C","place-tapst","Tappan Street",42.338459,-71.138702
+"Green-C","Green Line C","place-denrd","Dean Road",42.337807,-71.141853
+"Green-C","Green Line C","place-engav","Englewood Avenue",42.336971,-71.14566
+"Green-C","Green Line C","place-clmnl","Cleveland Circle",42.336142,-71.149326
+"Green-D","Green Line D","place-gover","Government Center",42.359705,-71.059215
+"Green-D","Green Line D","place-pktrm","Park Street",42.356395,-71.062424
+"Green-D","Green Line D","place-boyls","Boylston",42.35302,-71.06459
+"Green-D","Green Line D","place-armnl","Arlington",42.351902,-71.070893
+"Green-D","Green Line D","place-coecl","Copley",42.349974,-71.077447
+"Green-D","Green Line D","place-hymnl","Hynes Convention Center",42.347888,-71.087903
+"Green-D","Green Line D","place-kencl","Kenmore",42.348949,-71.095169
+"Green-D","Green Line D","place-fenwy","Fenway",42.345394,-71.104187
+"Green-D","Green Line D","place-longw","Longwood",42.341145,-71.110451
+"Green-D","Green Line D","place-bvmnl","Brookline Village",42.332774,-71.116296
+"Green-D","Green Line D","place-brkhl","Brookline Hills",42.331333,-71.126999
+"Green-D","Green Line D","place-bcnfd","Beaconsfield",42.335846,-71.140823
+"Green-D","Green Line D","place-rsmnl","Reservoir",42.335027,-71.148952
+"Green-D","Green Line D","place-chhil","Chestnut Hill",42.326653,-71.165314
+"Green-D","Green Line D","place-newto","Newton Centre",42.329391,-71.192429
+"Green-D","Green Line D","place-newtn","Newton Highlands",42.321735,-71.206116
+"Green-D","Green Line D","place-eliot","Eliot",42.319023,-71.216713
+"Green-D","Green Line D","place-waban","Waban",42.325943,-71.230728
+"Green-D","Green Line D","place-woodl","Woodland",42.333374,-71.244301
+"Green-D","Green Line D","place-river","Riverside",42.337059,-71.251742
+"Green-E","Green Line E","place-lech","Lechmere",42.370772,-71.076536
+"Green-E","Green Line E","place-spmnl","Science Park",42.366664,-71.067666
+"Green-E","Green Line E","place-north","North Station",42.365577,-71.06129
+"Green-E","Green Line E","place-haecl","Haymarket",42.363021,-71.05829
+"Green-E","Green Line E","place-gover","Government Center",42.359705,-71.059215
+"Green-E","Green Line E","place-pktrm","Park Street",42.356395,-71.062424
+"Green-E","Green Line E","place-boyls","Boylston",42.35302,-71.06459
+"Green-E","Green Line E","place-armnl","Arlington",42.351902,-71.070893
+"Green-E","Green Line E","place-coecl","Copley",42.349974,-71.077447
+"Green-E","Green Line E","place-prmnl","Prudential",42.34557,-71.081696
+"Green-E","Green Line E","place-symcl","Symphony",42.342687,-71.085056
+"Green-E","Green Line E","place-nuniv","Northeastern University",42.340401,-71.088806
+"Green-E","Green Line E","place-mfa","Museum of Fine Arts",42.337711,-71.095512
+"Green-E","Green Line E","place-lngmd","Longwood Medical Area",42.33596,-71.100052
+"Green-E","Green Line E","place-brmnl","Brigham Circle",42.334229,-71.104609
+"Green-E","Green Line E","place-fenwd","Fenwood Road",42.333706,-71.105728
+"Green-E","Green Line E","place-mispk","Mission Park",42.333195,-71.109756
+"Green-E","Green Line E","place-rvrwy","Riverway",42.331684,-71.111931
+"Green-E","Green Line E","place-bckhl","Back of the Hill",42.330139,-71.111313
+"Green-E","Green Line E","place-hsmnl","Heath Street",42.328316,-71.110252
+"Blue","Blue Line","place-wondl","Wonderland",42.41342,-70.991648
+"Blue","Blue Line","place-rbmnl","Revere Beach",42.407843,-70.992533
+"Blue","Blue Line","place-bmmnl","Beachmont",42.397542,-70.992319
+"Blue","Blue Line","place-sdmnl","Suffolk Downs",42.390501,-70.997123
+"Blue","Blue Line","place-orhte","Orient Heights",42.386867,-71.004736
+"Blue","Blue Line","place-wimnl","Wood Island",42.37964,-71.022865
+"Blue","Blue Line","place-aport","Airport",42.374262,-71.030395
+"Blue","Blue Line","place-mvbcl","Maverick",42.369119,-71.03953
+"Blue","Blue Line","place-aqucl","Aquarium",42.359784,-71.051652
+"Blue","Blue Line","place-state","State",42.358978,-71.057598
+"Blue","Blue Line","place-gover","Government Center",42.359705,-71.059215
+"Blue","Blue Line","place-bomnl","Bowdoin",42.361365,-71.062037
