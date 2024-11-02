@@ -114,10 +114,104 @@ This is a very large dataset that will require us to:
 2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/896d043f33ae4915b530df12141c772c_0/explore
 2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/5c36245a6e7f4b89851b99a4a2bce02b_0/explore
 
-
-
 ## CTPS park-and-ride inventory for MBTA stations
 
 Downloaded from https://www.ctps.org/maploc/www/apps/pnr-dashboard/index.html and stored in the data folder.
 
 Not sure yet what data cleaning steps are needed and what attributes we can use to join it with the rest of the station-level data.
+
+## Walking-Distance Buffer Areas
+
+This requires setting up an OpenRouteService API key (free) as described here: https://giscience.github.io/openrouteservice-r/articles/openrouteservice.html 
+
+```{r}
+library(openrouteservice)
+
+rt_stations_f23 <- read.csv('data/rapid_transit_stations_by_line_f23.csv')
+rt_stations_f19 <- read.csv('data/rapid_transit_stations_by_line_f19.csv')
+```
+
+Be careful about how many times you run this - the openrouteservice isochrones API limits you to 500 requests per day per API key. Each request returns 5 polygons, and we have ~150 stops, so a full run will use ~30 requests. There's also 20 request per minute throttling, so the full run will take ~1.5 minutes.
+```{r}
+walk_polys_f23 <- rt_stations_f23 %>%
+  mutate( # API expects a df with these two col names and nothing else
+    lon=stop_lon, lat=stop_lat, .keep='none'
+    ) %>% 
+  split(rep(1:ceiling(nrow(rt_stations_f23)/5),each=5)) %>% # split into groups of 5
+  lapply(function(df) {
+    Sys.sleep(3.01) # pause in between requests to accommodate the 20 per minute limit
+    ors_isochrones(df, profile=ors_profile(mode='walking'), range=600, output='sf')
+    }) %>%
+  bind_rows()
+
+walk_polys_f23
+```
+
+This plot shows that many of the 10min walking polygons overlap, even on the same route. The next step addresses this potential violation of the independence assumption by converting these into polygons that don't overlap each other on the same routes.
+```{r}
+plot(st_geometry(walk_polys_f23))
+```
+
+Source for the following function: https://gis.stackexchange.com/questions/358797/splitting-overlap-between-polygons-and-assign-to-nearest-polygon-using-r 
+```{r}
+st_no_overlap <- function(polygons) {
+
+  centroids <- st_centroid(polygons)
+
+  # Voronoi tesselation
+  voronoi <-
+    centroids %>%
+    st_geometry() %>%
+    st_union() %>%
+    st_voronoi() %>%
+    st_collection_extract()
+
+  # Put them back in their original order
+  voronoi <- voronoi[unlist(st_intersects(centroids, voronoi))]
+
+  # Keep the attributes
+  result <- centroids
+
+  # Intersect voronoi zones with polygons
+  st_geometry(result) <-
+    mapply(function(x, y) st_intersection(x, y),
+           st_geometry(polygons),
+           voronoi,
+           SIMPLIFY = FALSE) %>%
+    st_sfc(crs = st_crs(polygons))
+
+  result
+}
+```
+
+```{r}
+walk_polys_f23[c('route_id', 'route_long_name', 'parent_station', 
+                 'stop_name', 'stop_lat', 'stop_lon')] <- 
+  rt_stations_f23[c('route_id', 'route_long_name', 'parent_station', 
+                    'stop_name', 'stop_lat', 'stop_lon')]
+```
+
+```{r}
+sf_use_s2(FALSE)
+
+walk_polys_f23_nonoverlap <- walk_polys_f23 %>%
+  st_transform(26986) %>% # convert to projected coord system before no_overlap calc
+  group_split(route_id) %>% # split by route ID to limit the nonoverlap calculation to route-level
+  lapply(function(df) st_no_overlap(df)) %>% 
+  bind_rows() %>%
+  st_transform(4326) # convert back to lat/long
+```
+
+Save the station areas with both an overlapping version and a non-overlapping version. 
+```{r}
+rt_stations_f23$walk_poly_wkt <- walk_polys_f23$geometry
+
+rt_stations_f23 %>%
+  write.csv('data/rapid_transit_stations_by_line_f23_overlapping.csv', row.names=FALSE)
+
+walk_polys_f23_nonoverlap %>%
+  mutate(walk_poly_wkt = st_as_text(geometry)) %>%
+  select(-c(value, group_index, center)) %>%
+  st_drop_geometry() %>%
+  write.csv('data/rapid_transit_stations_by_line_f23_nonoverlapping.csv', row.names=FALSE)
+```
