@@ -19,7 +19,7 @@ This script will house any data cleaning processes to go from raw data to model-
 
 ridership_f23 <- read.csv('https://hub.arcgis.com/api/v3/datasets/80a379ebaa374cfd836ca4d3880ceda4_0/downloads/data?format=csv&spatialRefId=4326&where=1%3D1')
 
-ridership_f17_to_f19 <- read.csv('data/rail_ridership_stops_F17toF19.csv')
+ridership_f17_to_f19 <- read.csv('data/mbta/rail_ridership_stops_F17toF19.csv')
 ```
 
 ```{r}
@@ -43,8 +43,8 @@ f19_clean <- ridership_f17_to_f19 %>%
     .keep='unused'
     )
 
-f19_clean %>% rbind(f23_clean) %>% 
-  write.csv('data/rail_ridership_stops_clean_F19andF23.csv')
+f19_clean %>% write.csv('data/stations_routes_f19_ridership.csv')
+f23_clean %>% write.csv('data/stations_routes_f23_ridership.csv')
 ```
 
 ## MBTA GTFS
@@ -89,8 +89,8 @@ rt_stations_f23
 ```
 
 ```{r}
-rt_stations_f23 %>% write.csv('data/rapid_transit_stations_by_line_f23.csv', row.names=FALSE)
-rt_stations_f19 %>% write.csv('data/rapid_transit_stations_by_line_f19.csv', row.names=FALSE)
+rt_stations_f23 %>% write.csv('data/stations_routes_f23.csv', row.names=FALSE)
+rt_stations_f19 %>% write.csv('data/stations_routes_f19.csv', row.names=FALSE)
 ```
 
 
@@ -114,12 +114,6 @@ This is a very large dataset that will require us to:
 2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/896d043f33ae4915b530df12141c772c_0/explore
 2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/5c36245a6e7f4b89851b99a4a2bce02b_0/explore
 
-## CTPS park-and-ride inventory for MBTA stations
-
-Downloaded from https://www.ctps.org/maploc/www/apps/pnr-dashboard/index.html and stored in the data folder.
-
-Not sure yet what data cleaning steps are needed and what attributes we can use to join it with the rest of the station-level data.
-
 ## Walking-Distance Buffer Areas
 
 This requires setting up an OpenRouteService API key (free) as described here: https://giscience.github.io/openrouteservice-r/articles/openrouteservice.html 
@@ -127,24 +121,27 @@ This requires setting up an OpenRouteService API key (free) as described here: h
 ```{r}
 library(openrouteservice)
 
-rt_stations_f23 <- read.csv('data/rapid_transit_stations_by_line_f23.csv')
-rt_stations_f19 <- read.csv('data/rapid_transit_stations_by_line_f19.csv')
+rt_stations_f23 <- read.csv('data/stations_routes_f23.csv')
+rt_stations_f19 <- read.csv('data/stations_routes_f19.csv')
 ```
 
-Be careful about how many times you run this - the openrouteservice isochrones API limits you to 500 requests per day per API key. Each request returns 5 polygons, and we have ~150 stops, so a full run will use ~30 requests. There's also 20 request per minute throttling, so the full run will take ~1.5 minutes.
+Be careful about how many times you run this - the openrouteservice isochrones API limits you to 500 requests per day per API key. Each request returns 5 polygons, and we have ~150 stops, so a full run will use ~30 requests. There's also 20 request per minute throttling, so 1 full run per dataframe will take ~1.5 minutes.
 ```{r}
-walk_polys_f23 <- rt_stations_f23 %>%
-  mutate( # API expects a df with these two col names and nothing else
-    lon=stop_lon, lat=stop_lat, .keep='none'
-    ) %>% 
-  split(rep(1:ceiling(nrow(rt_stations_f23)/5),each=5)) %>% # split into groups of 5
-  lapply(function(df) {
-    Sys.sleep(3.01) # pause in between requests to accommodate the 20 per minute limit
-    ors_isochrones(df, profile=ors_profile(mode='walking'), range=600, output='sf')
-    }) %>%
-  bind_rows()
+walk_polys <- function(rt_stations_df) {
+  rt_stations_df %>%
+    mutate( # API expects a df with these two col names and nothing else
+      lon=stop_lon, lat=stop_lat, .keep='none'
+      ) %>% 
+    split(rep(1:ceiling(nrow(rt_stations_df)/5),each=5)) %>% # split into groups of 5
+    lapply(function(df) {
+      Sys.sleep(3.01) # pause in between requests to accommodate the 20 per minute limit
+      ors_isochrones(df, profile=ors_profile(mode='walking'), range=600, output='sf')
+      }) %>%
+    bind_rows()
+} 
 
-walk_polys_f23
+walk_polys_f23 <- walk_polys(rt_stations_f23)
+walk_polys_f19 <- walk_polys(rt_stations_f19)
 ```
 
 This plot shows that many of the 10min walking polygons overlap, even on the same route. The next step addresses this potential violation of the independence assumption by converting these into polygons that don't overlap each other on the same routes.
@@ -185,33 +182,85 @@ st_no_overlap <- function(polygons) {
 ```
 
 ```{r}
-walk_polys_f23[c('route_id', 'route_long_name', 'parent_station', 
-                 'stop_name', 'stop_lat', 'stop_lon')] <- 
-  rt_stations_f23[c('route_id', 'route_long_name', 'parent_station', 
-                    'stop_name', 'stop_lat', 'stop_lon')]
+walk_polys_f23[c('route_id', 'parent_station')] <- rt_stations_f23[c('route_id', 'parent_station')]
+walk_polys_f19[c('route_id', 'parent_station')] <- rt_stations_f19[c('route_id', 'parent_station')]
 ```
 
 ```{r}
 sf_use_s2(FALSE)
 
-walk_polys_f23_nonoverlap <- walk_polys_f23 %>%
+walk_polys_nonoverlap <- function(walk_polys_df) {
+  walk_polys_df %>%
   st_transform(26986) %>% # convert to projected coord system before no_overlap calc
   group_split(route_id) %>% # split by route ID to limit the nonoverlap calculation to route-level
   lapply(function(df) st_no_overlap(df)) %>% 
-  bind_rows() %>%
+  bind_rows() %>% # re-combine the list of dataframes by route into a single df
   st_transform(4326) # convert back to lat/long
+}
+
+walk_polys_f23_nonoverlap <- walk_polys_nonoverlap(walk_polys_f23)
+walk_polys_f19_nonoverlap <- walk_polys_nonoverlap(walk_polys_f19)
 ```
 
 Save the station areas with both an overlapping version and a non-overlapping version. 
 ```{r}
-rt_stations_f23$walk_poly_wkt <- walk_polys_f23$geometry
+clean_walk_polys <- function(walk_polys_df) {
+  walk_polys_df %>%
+    mutate(walk_poly_wkt = st_as_text(geometry)) %>%
+    st_drop_geometry() %>%
+    select(route_id, parent_station, walk_poly_wkt)
+}
 
-rt_stations_f23 %>%
-  write.csv('data/rapid_transit_stations_by_line_f23_overlapping.csv', row.names=FALSE)
+walk_polys_f23 %>% clean_walk_polys() %>%
+  write.csv('data/stations_routes_f23_geoms_overlapping.csv', row.names=FALSE)
 
-walk_polys_f23_nonoverlap %>%
-  mutate(walk_poly_wkt = st_as_text(geometry)) %>%
-  select(-c(value, group_index, center)) %>%
-  st_drop_geometry() %>%
-  write.csv('data/rapid_transit_stations_by_line_f23_nonoverlapping.csv', row.names=FALSE)
+walk_polys_f23_nonoverlap %>% clean_walk_polys() %>%
+  write.csv('data/stations_routes_f23_geoms_nonoverlapping.csv', row.names=FALSE)
+
+walk_polys_f19 %>% clean_walk_polys() %>%
+  write.csv('data/stations_routes_f19_geoms_overlapping.csv', row.names=FALSE)
+
+walk_polys_f19_nonoverlap %>% clean_walk_polys() %>%
+  write.csv('data/stations_routes_f19_geoms_nonoverlapping.csv', row.names=FALSE)
+```
+
+## CTPS park-and-ride inventory for MBTA stations
+
+Downloaded from https://www.ctps.org/maploc/www/apps/pnr-dashboard/index.html and stored in the data folder.
+
+```{r}
+ctps <- read.csv('data/mbta/ctps_pnr_lots_polygons.csv')
+rt_stations_f23 <- read.csv('data/stations_routes_f23.csv')
+rt_stations_f19 <- read.csv('data/stations_routes_f19.csv')
+```
+
+```{r}
+ctps_clean <- ctps %>%
+  filter(mode == 'Rapid Transit') %>%
+  mutate(station = str_trim(station, side='both')) %>%
+  mutate(station = case_when(station == 'Malden' ~ 'Malden Center', .default=station)) %>%
+  # total spaces can be disaggregated by permit-only, handicap-only, and general public spots
+  select(station, station_name, line_id, total_spaces_1) %>%
+  group_by(station) %>%
+  summarise(spaces = sum(total_spaces_1), .groups='drop')
+```
+
+```{r}
+# used this join to figure out which station names needed to be recoded - this
+# should have 0 rows. Any rows represent station names that didn't match successfully
+ctps_clean %>%
+  left_join(rt_stations_f23, by=join_by(station == stop_name)) %>%
+  filter(is.na(route_id))
+```
+
+```{r}
+join_ctps <- function(rt_stations_df) {
+  rt_stations_df %>%
+  left_join(ctps_clean, by=join_by(stop_name == station)) %>%
+  mutate(pnr_spaces = case_when(is.na(spaces) ~ 0, .default=spaces), .keep='unused') %>%
+  select(route_id, parent_station, pnr_spaces)
+}
+
+rt_stations_f23 %>% join_ctps() %>% write.csv('data/stations_routes_f23_pnr_spaces.csv', row.names=FALSE)
+rt_stations_f19 %>% join_ctps() %>% write.csv('data/stations_routes_f19_pnr_spaces.csv', row.names=FALSE)
 ```
