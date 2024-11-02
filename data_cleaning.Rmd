@@ -318,3 +318,25 @@ join_ctps <- function(rt_stations_df) {
 rt_stations_f23 %>% join_ctps() %>% write.csv('data/cleaned/stations_routes_f23_pnr_spaces.csv', row.names=FALSE)
 rt_stations_f19 %>% join_ctps() %>% write.csv('data/cleaned/stations_routes_f19_pnr_spaces.csv', row.names=FALSE)
 ```
+
+# Walk Scores
+
+```{r}
+ws <- read.csv('data/rapid_trans_facilities_wlkscore.csv')
+```
+
+```{r}
+# this should have 0 rows. Any rows represent stations that didn't join to the walk scores
+rt_stations_f23 %>%
+  left_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
+  filter(is.na(walk_score))
+```
+
+```{r}
+rt_stations_f23 %>%
+  left_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
+  select(route_id, parent_station, walk_score) %>%
+  write.csv('data/cleaned/stations_routes_f23_walk_scores.csv', row.names=FALSE)
+```
+
+
