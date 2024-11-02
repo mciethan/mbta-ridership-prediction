@@ -12,7 +12,7 @@ library(tidytransit)
 
 This script will house any data cleaning processes to go from raw data to model-ready intermediate outputs. These processes are in their own script file so that we don't want to do them every time we build a model.
 
-## MBTA ridership data
+## MBTA ridership data (dependent variable)
 
 ```{r}
 # these data come from the MBTA open data portal. Link for humans: https://mbta-massdot.opendata.arcgis.com/search?q=rail%20ridership%20by%20time%20period 
@@ -47,23 +47,23 @@ f19_clean %>% write.csv('data/cleaned/stations_routes_f19_ridership.csv')
 f23_clean %>% write.csv('data/cleaned/stations_routes_f23_ridership.csv')
 ```
 
+The unique identifier per ridership row is the combination of route_id and parent_station (meaning, for example, that State Street has separate rows for the Orange Line and the Blue Line). This informs how we process the various independent variables.
+
 # MBTA GTFS
 
-If we use actual travel times and headways, the only GTFS data we need is the association between stop IDs and stop names (aka parent stations).
+GTFS is a good canonical source for the lat/long coordinates for each station. GTFS is also probably the best source for calculating the number (and names) of bus routes that serve a given RT station. 
 
-If we would prefer scheduled travel times and headways, we would need to calculate average headways per stop from the information in the GTFS file.
-
-Either way, we will also want to grab the lat/long coordinates for each stop from GTFS. GTFS is also probably the best source for calculating the number (and names) of bus routes that serve a given RT station. 
+It is also an option to calculate scheduled travel times and headways from GTFS, as an alternative to using data on actual headways and travel times.
 
 1. Download the MBTA GTFS recap dataset from this link: https://www.arcgis.com/home/item.html?id=9ab1dc7ea2bf4ad7b7e25cc6b941b39a
 
 2. Run this next cell to interactively choose the folder where you downloaded the dataset:
 
 ```{r}
-downloaded_gtfs_path <- choose.dir(default = "", caption = "Select GTFS folder")
+downloaded_gtfs_path <- choose.dir(default = "", caption = "Select the GTFS recaps folder:")
 ```
 
-I am not sure whether this approach will work on non-Windows machines.
+I am not sure whether this path syntax will work on non-Windows machines.
 
 ```{r}
 f23_gtfs <- read_gtfs(paste0(downloaded_gtfs_path, '\\2023-fall-prerating-recap.zip'))
@@ -96,14 +96,14 @@ rt_stations_f23 <- rt_stations_per_route(f23_gtfs)
 rt_stations_f19 <- rt_stations_per_route(f19_gtfs)
 rt_stations_f23
 ```
-Save the station information to file. The unique identifier per row is the combination of route_id and parent_station
+Save the station-route level location and name information to file
 
 ```{r}
 rt_stations_f23 %>% write.csv('data/cleaned/stations_routes_f23.csv', row.names=FALSE)
 rt_stations_f19 %>% write.csv('data/cleaned/stations_routes_f19.csv', row.names=FALSE)
 ```
 
-## Calculate the number of bus routes that transfer to each RT station
+## Calculate the number of bus routes that connect to each station
 
 ```{r}
 rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
