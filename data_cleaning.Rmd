@@ -24,7 +24,7 @@ ridership_f17_to_f19 <- read.csv('data/mbta/rail_ridership_stops_F17toF19.csv')
 
 ```{r}
 f23_clean <- ridership_f23 %>% 
-  group_by(season, route_id, stop_name, parent_station) %>%
+  group_by(season, route_id, parent_station) %>%
   summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
   mutate(
     avg_boardings = total_ons/number_service_days, 
@@ -35,7 +35,7 @@ f23_clean <- ridership_f23 %>%
 f19_clean <- ridership_f17_to_f19 %>% 
   filter(season=='Fall 2019') %>% 
   mutate(parent_station = stop_id) %>%
-  group_by(season, route_id, stop_name, parent_station) %>%
+  group_by(season, route_id, parent_station) %>%
   summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
   mutate(
     avg_boardings = total_ons/number_service_days, 
@@ -75,21 +75,23 @@ f19_gtfs <- read_gtfs(paste0(downloaded_gtfs_path, '\\2019-fall-prerating-recap.
 ```{r}
 rt_stations_per_route <- function(gtfs) { 
   gtfs$routes %>%
-  filter(route_desc == 'Rapid Transit') %>% # filter to Rapid Transit routes
-  inner_join(gtfs$trips, by='route_id') %>%
-  inner_join(gtfs$calendar_attributes, by='service_id') %>%
-  filter(service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
-  mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
-  inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
-  filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
-  inner_join(gtfs$stop_times, by='trip_id') %>%
-  inner_join(gtfs$stops, by='stop_id') %>%
-  select(route_id, route_long_name, parent_station) %>%
-  # this second join to the stops table is so that we use the parent station IDs and their more
-  # generalized coordinates instead of the more specific coordinates of each platform
-  inner_join(gtfs$stops, by=join_by(parent_station==stop_id)) %>%
-  select(route_id, route_long_name, parent_station, stop_name, stop_lat, stop_lon) %>%
-  unique() # this selection lists each stop once per route they serve
+    filter(route_desc == 'Rapid Transit') %>% # filter to Rapid Transit routes
+    inner_join(gtfs$trips, by='route_id') %>%
+    inner_join(gtfs$calendar_attributes, by='service_id') %>%
+    filter(service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
+    mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
+    inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
+    filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
+    inner_join(gtfs$stop_times, by='trip_id') %>%
+    inner_join(gtfs$stops, by='stop_id') %>%
+    # reduce the Green Line's branches into a single Green route_id, consistent with ridership
+    mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
+    select(route_id, route_long_name, parent_station) %>%
+    # this second join to the stops table is so that we use the parent station IDs and their more
+    # generalized coordinates instead of the more specific coordinates of each platform
+    inner_join(gtfs$stops, by=join_by(parent_station==stop_id)) %>%
+    select(route_id, parent_station, stop_name, stop_lat, stop_lon) %>%
+    unique() # this selection lists each stop once per route they serve
 }
 
 rt_stations_f23 <- rt_stations_per_route(f23_gtfs)
@@ -200,6 +202,8 @@ walk_polys_f19 <- walk_polys(rt_stations_f19)
 
 This plot shows that many of the 10min walking polygons overlap, even on the same route. The next step addresses this potential violation of the independence assumption by converting these into polygons that don't overlap each other on the same routes.
 ```{r}
+library(sf)
+
 plot(st_geometry(walk_polys_f23))
 ```
 
@@ -254,6 +258,11 @@ walk_polys_nonoverlap <- function(walk_polys_df) {
 
 walk_polys_f23_nonoverlap <- walk_polys_nonoverlap(walk_polys_f23)
 walk_polys_f19_nonoverlap <- walk_polys_nonoverlap(walk_polys_f19)
+```
+
+Now, the plot shows the walk areas as nonoverlapping at the route level.
+```{r}
+plot(st_geometry(walk_polys_f23_nonoverlap))
 ```
 
 Save the station areas with both an overlapping version and a non-overlapping version. 

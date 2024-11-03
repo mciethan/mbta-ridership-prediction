@@ -1,121 +1,121 @@
-"","season","route_id","stop_name","parent_station","avg_boardings","avg_alightings"
-"1","Fall 2019","Blue","Airport","place-aport",527.631837307153,457.286816269285
-"2","Fall 2019","Blue","Aquarium","place-aqucl",324.871669004208,316.232117812062
-"3","Fall 2019","Blue","Beachmont","place-bmmnl",219.131136044881,226.452314165498
-"4","Fall 2019","Blue","Bowdoin","place-bomnl",140.035764375877,137.805049088359
-"5","Fall 2019","Blue","Government Center","place-gover",875.556100981767,753.568022440393
-"6","Fall 2019","Blue","Maverick","place-mvbcl",763.730014025245,824.736325385694
-"7","Fall 2019","Blue","Orient Heights","place-orhte",299.087657784011,235.647265077139
-"8","Fall 2019","Blue","Revere Beach","place-rbmnl",208.198457223001,236.611500701262
-"9","Fall 2019","Blue","State Street","place-state",901.021037868163,1067.75175315568
-"10","Fall 2019","Blue","Suffolk Downs","place-sdmnl",50.5343618513324,53.6444600280505
-"11","Fall 2019","Blue","Wonderland","place-wondl",405.685834502104,406.399018232819
-"12","Fall 2019","Blue","Wood Island","place-wimnl",136.40603085554,135.755259467041
-"13","Fall 2019","Green","Allston Street","place-alsgr",29.7931276297335,26.9992987377279
-"14","Fall 2019","Green","Arlington","place-armnl",529.094670406732,511.4698457223
-"15","Fall 2019","Green","Babcock Street","place-babck",34.8990182328191,40.9600280504909
-"16","Fall 2019","Green","Back of the Hill","place-bckhl",4.83169705469846,7.74964936886396
-"17","Fall 2019","Green","Beaconsfield","place-bcnfd",19.0161290322581,21.781206171108
-"18","Fall 2019","Green","Blandford Street","place-bland",25.0266479663394,27.726507713885
-"19","Fall 2019","Green","Boston College","place-lake",12.5462833099579,8.92706872370266
-"20","Fall 2019","Green","Boston Univ. Central","place-bucen",33.7931276297335,34.1746143057504
-"21","Fall 2019","Green","Boston Univ. East","place-buest",26.4964936886395,23.6802244039271
-"22","Fall 2019","Green","Boston Univ. West","place-buwst",18.2840112201964,17.0834502103787
-"23","Fall 2019","Green","Boylston","place-boyls",484.553997194951,422.423562412342
-"24","Fall 2019","Green","Brandon Hall","place-bndhl",7.49719495091164,7.33239831697055
-"25","Fall 2019","Green","Brigham Circle","place-brmnl",54.2166900420757,52.1129032258064
-"26","Fall 2019","Green","Brookline Hills","place-brkhl",22.8653576437588,18.0301542776999
-"27","Fall 2019","Green","Brookline Village","place-bvmnl",44.2798036465638,49.9698457223001
-"28","Fall 2019","Green","Chestnut Hill","place-chhil",23.335904628331,17.9424964936886
-"29","Fall 2019","Green","Chestnut Hill Ave.","place-chill",12.1276297335203,12.554698457223
-"30","Fall 2019","Green","Chiswick Road","place-chswk",16.694950911641,18.2166900420757
-"31","Fall 2019","Green","Cleveland Circle","place-clmnl",15.2854137447405,10.2433380084151
-"32","Fall 2019","Green","Coolidge Corner","place-cool",62.6886395511921,64.8015427769986
-"33","Fall 2019","Green","Copley","place-coecl",898.81206171108,819.758064516129
-"34","Fall 2019","Green","Dean Road","place-denrd",10.7994389901823,11.4509116409537
-"35","Fall 2019","Green","Eliot","place-eliot",13.2685834502104,9.46774193548387
-"36","Fall 2019","Green","Englewood Ave.","place-engav",15.2791023842917,32.0603085553997
-"37","Fall 2019","Green","Fairbanks Street","place-fbkst",13.2321178120617,11.6311360448808
-"38","Fall 2019","Green","Fenway","place-fenwy",39.3821879382889,43.5007012622721
-"39","Fall 2019","Green","Fenwood Road","place-fenwd",9.66619915848527,20.0876577840112
-"40","Fall 2019","Green","Government Center","place-gover",939.450210378682,1042.90112201964
-"41","Fall 2019","Green","Griggs Street","place-grigg",35.1542776998597,31.4803646563815
-"42","Fall 2019","Green","Harvard Ave.","place-harvd",64.3877980364656,98.577840112202
-"43","Fall 2019","Green","Hawes Street","place-hwsst",7.19354838709677,9.55049088359046
-"44","Fall 2019","Green","Haymarket","place-haecl",380.073632538569,402.505610098177
-"45","Fall 2019","Green","Heath Street","place-hsmnl",18.6542776998597,17.4368863955119
-"46","Fall 2019","Green","Hynes Convention Center","place-hymnl",530.390603085554,459.107994389902
-"47","Fall 2019","Green","Kenmore","place-kencl",595.748948106592,600.82889200561
-"48","Fall 2019","Green","Kent Street","place-kntst",8.65568022440393,6.96002805049088
-"49","Fall 2019","Green","Lechmere","place-lech",369.21809256662,258.326086956522
-"50","Fall 2019","Green","Longwood","place-longw",32.0750350631136,38.539270687237
-"51","Fall 2019","Green","Longwood Medical Area","place-lngmd",49.0904628330996,55.0497896213184
-"52","Fall 2019","Green","Mission Park","place-mispk",19.2180925666199,26.9670406732118
-"53","Fall 2019","Green","Museum of Fine Arts","place-mfa",34.4046283309958,33.1192145862553
-"54","Fall 2019","Green","Newton Centre","place-newto",25.8464235624123,20.8555399719495
-"55","Fall 2019","Green","Newton Highlands","place-newtn",22.687237026648,25.6879382889201
-"56","Fall 2019","Green","North Station","place-north",473.650070126227,460.279803646564
-"57","Fall 2019","Green","Northeastern University","place-nuniv",48.7166900420757,76.7748948106592
-"58","Fall 2019","Green","Packards Corner","place-brico",42.9754558204769,40.2931276297335
-"59","Fall 2019","Green","Park Street","place-pktrm",1773.68232819074,1884.76928471248
-"60","Fall 2019","Green","Pleasant Street","place-plsgr",23.3849929873773,20.3934081346424
-"61","Fall 2019","Green","Prudential","place-prmnl",219.577840112202,190.591164095372
-"62","Fall 2019","Green","Reservoir","place-rsmnl",33.0631136044881,44.4971949509116
-"63","Fall 2019","Green","Riverside","place-river",25.4747545582048,17.4579242636746
-"64","Fall 2019","Green","Riverway","place-rvrwy",16.6711079943899,25.8099579242637
-"65","Fall 2019","Green","Saint Mary Street","place-smary",29.2545582047686,41.1591865357644
-"66","Fall 2019","Green","Saint Paul Street","place-stplb",22.3471248246844,21.765778401122
-"67","Fall 2019","Green","Saint Paul Street","place-stpul",16.7545582047686,12.3793828892006
-"68","Fall 2019","Green","Science Park","place-spmnl",314.098176718093,374.700561009818
-"69","Fall 2019","Green","South Street","place-sougr",6.51683029453015,17.9312762973352
-"70","Fall 2019","Green","Summit Ave.","place-sumav",21.4642356241234,20.0308555399719
-"71","Fall 2019","Green","Sutherland Road","place-sthld",20.3765778401122,13.7300140252454
-"72","Fall 2019","Green","Symphony","place-symcl",123.452314165498,119.083450210379
-"73","Fall 2019","Green","Tappan Street","place-tapst",15.7720897615708,14.7482468443198
-"74","Fall 2019","Green","Waban","place-waban",9.82748948106592,6.35904628330996
-"75","Fall 2019","Green","Warren Street","place-wrnst",29.8892005610098,34.9712482468443
-"76","Fall 2019","Green","Washington Square","place-bcnwa",21.5715287517532,17.9151472650771
-"77","Fall 2019","Green","Washington Street","place-wascm",35,32.7482468443198
-"78","Fall 2019","Green","Woodland","place-woodl",15.0988779803647,14.2454417952314
-"79","Fall 2019","Orange","Assembly","place-astao",265.652173913043,296.291725105189
-"80","Fall 2019","Orange","Back Bay","place-bbsta",970.549789621318,982.899018232819
-"81","Fall 2019","Orange","Chinatown","place-chncl",350.220196353436,342.289621318373
-"82","Fall 2019","Orange","Community College","place-ccmnl",288.685133239832,398.664095371669
-"83","Fall 2019","Orange","Downtown Crossing","place-dwnxg",1776.84011220196,1843.35343618513
-"84","Fall 2019","Orange","Forest Hills","place-forhl",739.368162692847,689.318373071529
-"85","Fall 2019","Orange","Green Street","place-grnst",195.040673211781,203.898316970547
-"86","Fall 2019","Orange","Haymarket","place-haecl",501.838709677419,503.341514726508
-"87","Fall 2019","Orange","Jackson Square","place-jaksn",318.931977559607,306.156381486676
-"88","Fall 2019","Orange","Malden Center","place-mlmnl",717.26507713885,685.676718092567
-"89","Fall 2019","Orange","Massachusetts Ave.","place-masta",350.250350631136,411.072230014025
-"90","Fall 2019","Orange","North Station","place-north",791.477559607293,684.687237026648
-"91","Fall 2019","Orange","Oak Grove","place-ogmnl",390.224403927069,306.230014025245
-"92","Fall 2019","Orange","Roxbury Crossing","place-rcmnl",277.944600280505,284.056802244039
-"93","Fall 2019","Orange","Ruggles","place-rugg",623.12412342216,639.943197755961
-"94","Fall 2019","Orange","State Street","place-state",1066.37727910238,1025.32398316971
-"95","Fall 2019","Orange","Stony Brook","place-sbmnl",204.235624123422,219.446002805049
-"96","Fall 2019","Orange","Sullivan Square","place-sull",519.95301542777,507.144460028051
-"97","Fall 2019","Orange","Tufts Medical Center","place-tumnl",372.460028050491,387.094670406732
-"98","Fall 2019","Orange","Wellington","place-welln",472.716690042076,476.273492286115
-"99","Fall 2019","Red","Alewife","place-alfcl",700.20126227209,717.117110799439
-"100","Fall 2019","Red","Andrew","place-andrw",360.98667601683,378.133941093969
-"101","Fall 2019","Red","Ashmont","place-asmnl",525.077840112202,448.321879382889
-"102","Fall 2019","Red","Braintree","place-brntn",266.121318373072,236.204067321178
-"103","Fall 2019","Red","Broadway","place-brdwy",368.401122019635,374.08064516129
-"104","Fall 2019","Red","Central","place-cntsq",914.817671809257,1001.15778401122
-"105","Fall 2019","Red","Charles/MGH","place-chmnl",623.678821879383,638.147265077139
-"106","Fall 2019","Red","Davis","place-davis",723.095371669004,758.523141654979
-"107","Fall 2019","Red","Downtown Crossing","place-dwnxg",1851.62412342216,1982.14375876578
-"108","Fall 2019","Red","Fields Corner","place-fldcr",319.314165497896,335.266479663394
-"109","Fall 2019","Red","Harvard","place-harsq",1094.08204768583,974.608695652174
-"110","Fall 2019","Red","JFK/Umass","place-jfk",623.467741935484,636.62762973352
-"111","Fall 2019","Red","Kendall/MIT","place-knncl",1015.84361851332,1072.24263674614
-"112","Fall 2019","Red","North Quincy","place-nqncy",362.595371669004,382.795932678822
-"113","Fall 2019","Red","Park Street","place-pktrm",1977.97545582048,1877.7412342216
-"114","Fall 2019","Red","Porter","place-portr",529.541374474053,563.321879382889
-"115","Fall 2019","Red","Quincy Adams","place-qamnl",248.620617110799,256.99649368864
-"116","Fall 2019","Red","Quincy Center","place-qnctr",450.989481065919,473.140252454418
-"117","Fall 2019","Red","Savin Hill","place-shmnl",137.34221598878,144.370967741935
-"118","Fall 2019","Red","Shawmut","place-smmnl",141.890603085554,174.242636746143
-"119","Fall 2019","Red","South Station","place-sstat",1662.94880785414,1453.03225806452
-"120","Fall 2019","Red","Wollaston","place-wlsta",204.852734922861,225.26507713885
+"","season","route_id","parent_station","avg_boardings","avg_alightings"
+"1","Fall 2019","Blue","place-aport",527.631837307153,457.286816269285
+"2","Fall 2019","Blue","place-aqucl",324.871669004208,316.232117812062
+"3","Fall 2019","Blue","place-bmmnl",219.131136044881,226.452314165498
+"4","Fall 2019","Blue","place-bomnl",140.035764375877,137.805049088359
+"5","Fall 2019","Blue","place-gover",875.556100981767,753.568022440393
+"6","Fall 2019","Blue","place-mvbcl",763.730014025245,824.736325385694
+"7","Fall 2019","Blue","place-orhte",299.087657784011,235.647265077139
+"8","Fall 2019","Blue","place-rbmnl",208.198457223001,236.611500701262
+"9","Fall 2019","Blue","place-sdmnl",50.5343618513324,53.6444600280505
+"10","Fall 2019","Blue","place-state",901.021037868163,1067.75175315568
+"11","Fall 2019","Blue","place-wimnl",136.40603085554,135.755259467041
+"12","Fall 2019","Blue","place-wondl",405.685834502104,406.399018232819
+"13","Fall 2019","Green","place-alsgr",29.7931276297335,26.9992987377279
+"14","Fall 2019","Green","place-armnl",529.094670406732,511.4698457223
+"15","Fall 2019","Green","place-babck",34.8990182328191,40.9600280504909
+"16","Fall 2019","Green","place-bckhl",4.83169705469846,7.74964936886396
+"17","Fall 2019","Green","place-bcnfd",19.0161290322581,21.781206171108
+"18","Fall 2019","Green","place-bcnwa",21.5715287517532,17.9151472650771
+"19","Fall 2019","Green","place-bland",25.0266479663394,27.726507713885
+"20","Fall 2019","Green","place-bndhl",7.49719495091164,7.33239831697055
+"21","Fall 2019","Green","place-boyls",484.553997194951,422.423562412342
+"22","Fall 2019","Green","place-brico",42.9754558204769,40.2931276297335
+"23","Fall 2019","Green","place-brkhl",22.8653576437588,18.0301542776999
+"24","Fall 2019","Green","place-brmnl",54.2166900420757,52.1129032258064
+"25","Fall 2019","Green","place-bucen",33.7931276297335,34.1746143057504
+"26","Fall 2019","Green","place-buest",26.4964936886395,23.6802244039271
+"27","Fall 2019","Green","place-buwst",18.2840112201964,17.0834502103787
+"28","Fall 2019","Green","place-bvmnl",44.2798036465638,49.9698457223001
+"29","Fall 2019","Green","place-chhil",23.335904628331,17.9424964936886
+"30","Fall 2019","Green","place-chill",12.1276297335203,12.554698457223
+"31","Fall 2019","Green","place-chswk",16.694950911641,18.2166900420757
+"32","Fall 2019","Green","place-clmnl",15.2854137447405,10.2433380084151
+"33","Fall 2019","Green","place-coecl",898.81206171108,819.758064516129
+"34","Fall 2019","Green","place-cool",62.6886395511921,64.8015427769986
+"35","Fall 2019","Green","place-denrd",10.7994389901823,11.4509116409537
+"36","Fall 2019","Green","place-eliot",13.2685834502104,9.46774193548387
+"37","Fall 2019","Green","place-engav",15.2791023842917,32.0603085553997
+"38","Fall 2019","Green","place-fbkst",13.2321178120617,11.6311360448808
+"39","Fall 2019","Green","place-fenwd",9.66619915848527,20.0876577840112
+"40","Fall 2019","Green","place-fenwy",39.3821879382889,43.5007012622721
+"41","Fall 2019","Green","place-gover",939.450210378682,1042.90112201964
+"42","Fall 2019","Green","place-grigg",35.1542776998597,31.4803646563815
+"43","Fall 2019","Green","place-haecl",380.073632538569,402.505610098177
+"44","Fall 2019","Green","place-harvd",64.3877980364656,98.577840112202
+"45","Fall 2019","Green","place-hsmnl",18.6542776998597,17.4368863955119
+"46","Fall 2019","Green","place-hwsst",7.19354838709677,9.55049088359046
+"47","Fall 2019","Green","place-hymnl",530.390603085554,459.107994389902
+"48","Fall 2019","Green","place-kencl",595.748948106592,600.82889200561
+"49","Fall 2019","Green","place-kntst",8.65568022440393,6.96002805049088
+"50","Fall 2019","Green","place-lake",12.5462833099579,8.92706872370266
+"51","Fall 2019","Green","place-lech",369.21809256662,258.326086956522
+"52","Fall 2019","Green","place-lngmd",49.0904628330996,55.0497896213184
+"53","Fall 2019","Green","place-longw",32.0750350631136,38.539270687237
+"54","Fall 2019","Green","place-mfa",34.4046283309958,33.1192145862553
+"55","Fall 2019","Green","place-mispk",19.2180925666199,26.9670406732118
+"56","Fall 2019","Green","place-newtn",22.687237026648,25.6879382889201
+"57","Fall 2019","Green","place-newto",25.8464235624123,20.8555399719495
+"58","Fall 2019","Green","place-north",473.650070126227,460.279803646564
+"59","Fall 2019","Green","place-nuniv",48.7166900420757,76.7748948106592
+"60","Fall 2019","Green","place-pktrm",1773.68232819074,1884.76928471248
+"61","Fall 2019","Green","place-plsgr",23.3849929873773,20.3934081346424
+"62","Fall 2019","Green","place-prmnl",219.577840112202,190.591164095372
+"63","Fall 2019","Green","place-river",25.4747545582048,17.4579242636746
+"64","Fall 2019","Green","place-rsmnl",33.0631136044881,44.4971949509116
+"65","Fall 2019","Green","place-rvrwy",16.6711079943899,25.8099579242637
+"66","Fall 2019","Green","place-smary",29.2545582047686,41.1591865357644
+"67","Fall 2019","Green","place-sougr",6.51683029453015,17.9312762973352
+"68","Fall 2019","Green","place-spmnl",314.098176718093,374.700561009818
+"69","Fall 2019","Green","place-sthld",20.3765778401122,13.7300140252454
+"70","Fall 2019","Green","place-stplb",22.3471248246844,21.765778401122
+"71","Fall 2019","Green","place-stpul",16.7545582047686,12.3793828892006
+"72","Fall 2019","Green","place-sumav",21.4642356241234,20.0308555399719
+"73","Fall 2019","Green","place-symcl",123.452314165498,119.083450210379
+"74","Fall 2019","Green","place-tapst",15.7720897615708,14.7482468443198
+"75","Fall 2019","Green","place-waban",9.82748948106592,6.35904628330996
+"76","Fall 2019","Green","place-wascm",35,32.7482468443198
+"77","Fall 2019","Green","place-woodl",15.0988779803647,14.2454417952314
+"78","Fall 2019","Green","place-wrnst",29.8892005610098,34.9712482468443
+"79","Fall 2019","Orange","place-astao",265.652173913043,296.291725105189
+"80","Fall 2019","Orange","place-bbsta",970.549789621318,982.899018232819
+"81","Fall 2019","Orange","place-ccmnl",288.685133239832,398.664095371669
+"82","Fall 2019","Orange","place-chncl",350.220196353436,342.289621318373
+"83","Fall 2019","Orange","place-dwnxg",1776.84011220196,1843.35343618513
+"84","Fall 2019","Orange","place-forhl",739.368162692847,689.318373071529
+"85","Fall 2019","Orange","place-grnst",195.040673211781,203.898316970547
+"86","Fall 2019","Orange","place-haecl",501.838709677419,503.341514726508
+"87","Fall 2019","Orange","place-jaksn",318.931977559607,306.156381486676
+"88","Fall 2019","Orange","place-masta",350.250350631136,411.072230014025
+"89","Fall 2019","Orange","place-mlmnl",717.26507713885,685.676718092567
+"90","Fall 2019","Orange","place-north",791.477559607293,684.687237026648
+"91","Fall 2019","Orange","place-ogmnl",390.224403927069,306.230014025245
+"92","Fall 2019","Orange","place-rcmnl",277.944600280505,284.056802244039
+"93","Fall 2019","Orange","place-rugg",623.12412342216,639.943197755961
+"94","Fall 2019","Orange","place-sbmnl",204.235624123422,219.446002805049
+"95","Fall 2019","Orange","place-state",1066.37727910238,1025.32398316971
+"96","Fall 2019","Orange","place-sull",519.95301542777,507.144460028051
+"97","Fall 2019","Orange","place-tumnl",372.460028050491,387.094670406732
+"98","Fall 2019","Orange","place-welln",472.716690042076,476.273492286115
+"99","Fall 2019","Red","place-alfcl",700.20126227209,717.117110799439
+"100","Fall 2019","Red","place-andrw",360.98667601683,378.133941093969
+"101","Fall 2019","Red","place-asmnl",525.077840112202,448.321879382889
+"102","Fall 2019","Red","place-brdwy",368.401122019635,374.08064516129
+"103","Fall 2019","Red","place-brntn",266.121318373072,236.204067321178
+"104","Fall 2019","Red","place-chmnl",623.678821879383,638.147265077139
+"105","Fall 2019","Red","place-cntsq",914.817671809257,1001.15778401122
+"106","Fall 2019","Red","place-davis",723.095371669004,758.523141654979
+"107","Fall 2019","Red","place-dwnxg",1851.62412342216,1982.14375876578
+"108","Fall 2019","Red","place-fldcr",319.314165497896,335.266479663394
+"109","Fall 2019","Red","place-harsq",1094.08204768583,974.608695652174
+"110","Fall 2019","Red","place-jfk",623.467741935484,636.62762973352
+"111","Fall 2019","Red","place-knncl",1015.84361851332,1072.24263674614
+"112","Fall 2019","Red","place-nqncy",362.595371669004,382.795932678822
+"113","Fall 2019","Red","place-pktrm",1977.97545582048,1877.7412342216
+"114","Fall 2019","Red","place-portr",529.541374474053,563.321879382889
+"115","Fall 2019","Red","place-qamnl",248.620617110799,256.99649368864
+"116","Fall 2019","Red","place-qnctr",450.989481065919,473.140252454418
+"117","Fall 2019","Red","place-shmnl",137.34221598878,144.370967741935
+"118","Fall 2019","Red","place-smmnl",141.890603085554,174.242636746143
+"119","Fall 2019","Red","place-sstat",1662.94880785414,1453.03225806452
+"120","Fall 2019","Red","place-wlsta",204.852734922861,225.26507713885
