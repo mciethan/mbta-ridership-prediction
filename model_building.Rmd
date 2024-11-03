@@ -1,0 +1,36 @@
+---
+title: "Model Building"
+author: "Emmett Greenberg, Ted Banken, Ethan McIntosh"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+This script will be where we build & validate our models of ridership.
+
+## Read in and join the data
+
+```{r}
+get_dataset <- function(dataset) {
+  read.csv(paste0('data/cleaned/stations_routes_', dataset, '.csv'))
+}
+
+model_data_f23 <- get_dataset('f23') %>%
+  inner_join(get_dataset('f23_geoms_nonoverlapping'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('f23_bus_connections'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('f23_pnr_spaces'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('f23_walk_scores'), by=c('route_id', 'parent_station')) %>%
+  left_join(get_dataset('f23_ridership'), by=c('route_id', 'parent_station'))
+```
+
+```{r}
+basic_reg <- lm(avg_boardings ~ walk_score + connecting_bus_routes + pnr_spaces, data=model_data_f23)
+
+summary(basic_reg)
+```
+
+
+
