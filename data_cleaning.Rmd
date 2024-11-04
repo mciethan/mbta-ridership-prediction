@@ -105,16 +105,35 @@ rt_stations_f23 %>% write.csv('data/cleaned/stations_routes_f23.csv', row.names=
 rt_stations_f19 %>% write.csv('data/cleaned/stations_routes_f19.csv', row.names=FALSE)
 ```
 
-## Calculate the number of bus routes that connect to each station
+## Calculate the number of bus routes and riders that connect to each station
 
 ```{r}
 rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
 rt_stations_f19 <- read.csv('data/cleaned/stations_routes_f19.csv')
 ```
 
+### Bus ridership pre-processing
+
 ```{r}
-count_connecting_buses <- function(gtfs) {
-  # the goal here is to count the number of bus routes serving each parent_station
+bus_ridership_f23 <- read.csv('data/mbta/bus_ridership_stops_F23.csv')
+bus_ridership_f19 <- read.csv('data/mbta/bus_ridership_stops_F19.csv')
+```
+
+```{r}
+clean_bus_ridership <- function(bus_df) {
+  bus_df %>% 
+    mutate(route_id = as.character(route_id)) %>%
+    group_by(route_id) %>%
+    summarise(across(c(average_ons, average_offs), sum), .groups='drop')
+}
+
+bus_rdrs_f23 <- bus_ridership_f23 %>% clean_bus_ridership()
+bus_rdrs_f19 <- bus_ridership_f19 %>% clean_bus_ridership()
+```
+
+```{r}
+calc_bus_metrics <- function(gtfs, bus_ridership) {
+  # the goal here is to count the number of bus routes and riders connecting to each parent_station
   gtfs$stops %>% 
     inner_join(gtfs$stop_times, by='stop_id') %>%
     inner_join(gtfs$trips, by='trip_id') %>%
@@ -125,12 +144,15 @@ count_connecting_buses <- function(gtfs) {
     filter(str_detect(route_desc, 'Bus'), listed_route != '1') %>%
     select(parent_station, route_id) %>%
     unique() %>%
+    # left join because not all bus route IDs have ridership in this dataset
+    # I did check and it was just a handful of variants / special service type routes
+    left_join(bus_ridership, by='route_id') %>%
     group_by(parent_station) %>%
-    summarise(connecting_bus_routes = n(), .groups='drop')
+    summarise(bus_rte_count = n(), bus_rte_riders = sum(average_ons, na.rm=T), .groups='drop')
 }
 
-f23_buses <- f23_gtfs %>% count_connecting_buses()
-f19_buses <- f19_gtfs %>% count_connecting_buses()
+f23_buses <- f23_gtfs %>% calc_bus_metrics(bus_rdrs_f23)
+f19_buses <- f19_gtfs %>% calc_bus_metrics(bus_rdrs_f19)
 ```
 
 ```{r}
@@ -138,9 +160,12 @@ clean_bus_connections <- function(rt_stations_df, buses_df) {
   rt_stations_df %>%
     left_join(buses_df, by='parent_station') %>%
     mutate(connecting_bus_routes = case_when(
-      is.na(connecting_bus_routes) ~ 0, .default=connecting_bus_routes
+        is.na(bus_rte_count) ~ 0, .default=bus_rte_count
+      ),
+      connecting_bus_riders = case_when(
+        is.na(bus_rte_riders) ~ 0, .default=bus_rte_riders
       )) %>%
-    select(route_id, parent_station, connecting_bus_routes)
+    select(route_id, parent_station, connecting_bus_routes, connecting_bus_riders)
 }
 
 rt_stations_f23 %>% clean_bus_connections(f23_buses) %>%
