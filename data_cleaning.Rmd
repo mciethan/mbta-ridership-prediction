@@ -77,11 +77,6 @@ rt_stations_per_route <- function(gtfs) {
   gtfs$routes %>%
     filter(route_desc == 'Rapid Transit') %>% # filter to Rapid Transit routes
     inner_join(gtfs$trips, by='route_id') %>%
-    inner_join(gtfs$calendar_attributes, by='service_id') %>%
-    filter(service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
-    mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
-    inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
-    filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
     inner_join(gtfs$stop_times, by='trip_id') %>%
     inner_join(gtfs$stops, by='stop_id') %>%
     # reduce the Green Line's branches into a single Green route_id, consistent with ridership
@@ -103,6 +98,54 @@ Save the station-route level location and name information to file
 ```{r}
 rt_stations_f23 %>% write.csv('data/cleaned/stations_routes_f23.csv', row.names=FALSE)
 rt_stations_f19 %>% write.csv('data/cleaned/stations_routes_f19.csv', row.names=FALSE)
+```
+
+## Calculate the average inbound weekday headway in seconds per route per station 
+
+```{r}
+library(hms)
+
+headways_per_station_route <- function(gtfs) { 
+  gtfs$stop_times %>%
+    filter(departure_time > parse_hms('06:00:00'), departure_time < parse_hms('22:00:00'))  %>%
+    inner_join(gtfs$trips, by='trip_id') %>%
+    filter(direction_id == '1') %>% # only consider a single direction (inbound, in this case)
+    inner_join(gtfs$routes, by='route_id') %>%
+    filter(route_desc == 'Rapid Transit') %>%
+    inner_join(gtfs$calendar_attributes, by='service_id') %>%
+    filter(
+      service_schedule_type == 'Weekday', # only consider weekday service
+      service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
+    mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
+    inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
+    filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
+    inner_join(gtfs$stops, by='stop_id') %>%
+    mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
+    group_by(route_id, parent_station) %>%
+    summarise(avg_headway = round(16*3600/n()), service_count = n_distinct(service_id), .groups='drop') 
+}
+
+f23_headways <- f23_gtfs %>% headways_per_station_route()
+f19_headways <- f19_gtfs %>% headways_per_station_route()
+```
+
+```{r}
+# this diagnostic checks that all the headways were calculated with a single service ID
+# if there are values other than 1 in this output, the headways may need recalculation
+f23_headways %>%
+  select(service_count) %>%
+  unique()
+
+f19_headways %>%
+  select(service_count) %>%
+  unique()
+```
+
+```{r}
+f23_headways %>% select(-service_count) %>% 
+  write.csv('data/cleaned/stations_routes_f23_headways.csv', row.names=FALSE)
+f19_headways %>% select(-service_count) %>% 
+  write.csv('data/cleaned/stations_routes_f19_headways.csv', row.names=FALSE)
 ```
 
 ## Calculate the number of bus routes and riders that connect to each station
