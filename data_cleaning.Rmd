@@ -55,6 +55,8 @@ GTFS is a good canonical source for the lat/long coordinates for each station. G
 
 It is also an option to calculate scheduled travel times and headways from GTFS, as an alternative to using data on actual headways and travel times.
 
+GTFS feeds have files larger than the GitHub size limit, so they're not included in the repo. Follow these instructions to run this part of the analysis:
+
 1. Download the MBTA GTFS recap dataset from this link: https://www.arcgis.com/home/item.html?id=9ab1dc7ea2bf4ad7b7e25cc6b941b39a
 
 2. Run this next cell to interactively choose the folder where you downloaded the dataset:
@@ -226,8 +228,104 @@ This is a very large dataset that will require us to:
 - filter dates to our specific season
 - choose which destinations we should consider for each station origin (or if some kind of destination-weighted average travel time is possible / desirable)
 
-2023 link: https://mbta-massdot.opendata.arcgis.com/datasets/b08854b18ad942e4bc471c8c20e80792/about
+Follow these instructions to run this part of the analysis:
+
+1. Download the MBTA Rapid Transit Travel Times 2023 dataset from this link: https://mbta-massdot.opendata.arcgis.com/datasets/b08854b18ad942e4bc471c8c20e80792/about
+
 2019 link: https://mbta-massdot.opendata.arcgis.com/datasets/a70a2151c74f4ea7b6688970b76d2ff7/about 
+
+2. Run this next cell to interactively choose the folder where you downloaded the dataset:
+
+```{r}
+downloaded_traveltimes_path <- choose.dir(default = "", caption = "Select the travel times folder:")
+```
+
+Steps 3 and 4 are not necessary if you already initalized a downloaded_gtfs_path to process other GTFS-based metrics.
+
+3. Download the MBTA GTFS recap dataset from this link: https://www.arcgis.com/home/item.html?id=9ab1dc7ea2bf4ad7b7e25cc6b941b39a
+
+4. Run this next cell to interactively choose the folder where you downloaded the GTFS dataset:
+
+```{r}
+downloaded_gtfs_path <- choose.dir(default = "", caption = "Select the GTFS recaps folder:")
+```
+
+Now read in the data. I am not sure whether this path syntax will work on non-Windows machines.
+
+```{r}
+f23_q3_ttimes_hr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_HRTravelTimes.csv'))
+f23_q3_ttimes_lr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_LRTravelTimes.csv'))
+f23_q4_ttimes_hr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_HRTravelTimes.csv'))
+f23_q4_ttimes_lr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_LRTravelTimes.csv'))
+
+f23_gtfs <- read_gtfs(paste0(downloaded_gtfs_path, '\\2023-fall-prerating-recap.zip'))
+rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
+```
+
+```{r}
+f23_gtfs$calendar %>%
+  inner_join(f23_gtfs$trips, by='service_id') %>%
+  inner_join(f23_gtfs$routes, by='route_id') %>%
+  filter(route_desc == 'Rapid Transit') %>%
+  #group_by(start_date, end_date) %>%
+  summarise(rating_start = min(start_date), rating_end = max(end_date))
+```
+
+Use the above to edit the date filters below if needed:
+
+```{r}
+f23_ttimes_rt <- f23_q3_ttimes_hr %>%
+  rbind(f23_q3_ttimes_lr) %>%
+  filter(service_date >= '2023-08-27') %>%
+  rbind(
+    f23_q4_ttimes_hr %>% rbind(f23_q4_ttimes_lr) %>% filter(service_date <= '2023-12-16')
+  )
+```
+
+```{r}
+rt_stops_f23 <- f23_gtfs$routes %>%
+  filter(route_desc == 'Rapid Transit') %>%
+  inner_join(f23_gtfs$trips, by='route_id') %>%
+  inner_join(f23_gtfs$stop_times, by='trip_id') %>%
+  inner_join(f23_gtfs$stops, by='stop_id') %>%
+  select(stop_id, parent_station, stop_name) %>%
+  unique() %>%
+  mutate(stop_id = as.integer(stop_id)) 
+
+ttime_metrics_f23 <- rt_stops %>%
+  filter(stop_name %in% c('Park Street', 'Downtown Crossing', 'Government Center', 'State')) %>%
+  inner_join(f23_ttimes_rt, by=join_by(stop_id == to_stop_id)) %>%
+  mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
+  group_by(route_id, from_stop_id, stop_id) %>%
+  summarise(
+    runs=n(), 
+    avg_tt = mean(travel_time_sec, na.rm=T), 
+    sd_tt = sd(travel_time_sec, na.rm=T),
+    .groups='drop') %>%
+  inner_join(rt_stops_f23, by=join_by(from_stop_id == stop_id)) %>%
+  group_by(route_id, parent_station) %>% 
+  slice(which.min(avg_tt)) %>%
+  select(route_id, parent_station, avg_tt, sd_tt)
+```
+
+```{r}
+# the only rows that should show up here are Mattapan Line stops, for which the MBTA
+# does not have / does not publish travel time data
+rt_stations_f23 %>%
+  left_join(ttime_metrics_f23, by=c('route_id', 'parent_station')) %>%
+  filter(is.na(avg_tt))
+```
+
+It also appears that this dataset does not record any travel times from Union Square (stop_id == 70504) to other places, which is odd. It does record travel times from other places to Union Square though, at inbound stop 70503. 
+```{r}
+rt_stops_f23 %>%
+  filter(parent_station == 'place-unsqu') %>%
+  inner_join(f23_ttimes_rt, by=join_by(stop_id == from_stop_id))
+```
+
+```{r}
+ttime_metrics_f23 %>% write.csv('data/cleaned/stations_routes_f23_travel_times_to_cbd.csv')
+```
 
 # MBTA Rapid Transit Headways 
 
