@@ -518,4 +518,12 @@ rt_stations_f23 %>%
   write.csv('data/cleaned/stations_routes_f23_walk_scores.csv', row.names=FALSE)
 ```
 
+# College Locations & Enrollments (IPEDS)
+
+2023 and 2019 data download links and data dictionaries available from https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx?gotoReportId=7&fromIpeds=true 
+
+```{r}
+hd <- read.csv('data/ipeds/hd2023.csv')
+effy <- read.csv('data/ipeds/effy2023.csv')
+```
 
