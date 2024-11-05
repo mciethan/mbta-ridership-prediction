@@ -253,59 +253,67 @@ downloaded_gtfs_path <- choose.dir(default = "", caption = "Select the GTFS reca
 Now read in the data. I am not sure whether this path syntax will work on non-Windows machines.
 
 ```{r}
-f23_q3_ttimes_hr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_HRTravelTimes.csv'))
-f23_q3_ttimes_lr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_LRTravelTimes.csv'))
-f23_q4_ttimes_hr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_HRTravelTimes.csv'))
-f23_q4_ttimes_lr <- read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_LRTravelTimes.csv'))
+q3q4_2023_ttimes_rt <- 
+  read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_HRTravelTimes.csv')) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q3_LRTravelTimes.csv'))) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_HRTravelTimes.csv'))) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2023-Q4_LRTravelTimes.csv')))
+
+
+q3q4_2019_ttimes_rt <- 
+  read.csv(paste0(downloaded_traveltimes_path, '\\2019-Q3_HRTravelTimes.csv')) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2019-Q3_LRTravelTimes.csv'))) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2019-Q4_HRTravelTimes.csv'))) %>%
+  rbind(read.csv(paste0(downloaded_traveltimes_path, '\\2019-Q4_LRTravelTimes.csv')))
+
 
 f23_gtfs <- read_gtfs(paste0(downloaded_gtfs_path, '\\2023-fall-prerating-recap.zip'))
+f19_gtfs <- read_gtfs(paste0(downloaded_gtfs_path, '\\2019-fall-prerating-recap.zip'))
+
 rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
+rt_stations_f19 <- read.csv('data/cleaned/stations_routes_f19.csv')
 ```
 
 ```{r}
-f23_gtfs$calendar %>%
-  inner_join(f23_gtfs$trips, by='service_id') %>%
-  inner_join(f23_gtfs$routes, by='route_id') %>%
-  filter(route_desc == 'Rapid Transit') %>%
-  #group_by(start_date, end_date) %>%
-  summarise(rating_start = min(start_date), rating_end = max(end_date))
-```
+travel_time_metrics <- function(travel_times, gtfs) {
+  ttimes_filtered <- gtfs$calendar %>%
+    inner_join(gtfs$trips, by='service_id') %>%
+    inner_join(gtfs$routes, by='route_id') %>%
+    filter(route_desc == 'Rapid Transit') %>%
+    summarise(
+      rating_start = as.character(min(start_date)), 
+      rating_end = as.character(max(end_date))
+      ) %>%
+    inner_join(travel_times, 
+      by=join_by(rating_start <= service_date, rating_end >= service_date))
+  
+  rt_stops <- gtfs$routes %>%
+    filter(route_desc == 'Rapid Transit') %>%
+    inner_join(gtfs$trips, by='route_id') %>%
+    inner_join(gtfs$stop_times, by='trip_id') %>%
+    inner_join(gtfs$stops, by='stop_id') %>%
+    select(stop_id, parent_station, stop_name) %>%
+    unique() %>%
+    mutate(stop_id = as.integer(stop_id)) 
+  
+  rt_stops %>%
+    filter(stop_name %in% c('Park Street', 'Downtown Crossing', 'Government Center', 'State')) %>%
+    inner_join(ttimes_filtered, by=join_by(stop_id == to_stop_id)) %>%
+    mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
+    group_by(route_id, from_stop_id, stop_id) %>%
+    summarise(
+      runs=n(), 
+      avg_tt = mean(travel_time_sec, na.rm=T), 
+      sd_tt = sd(travel_time_sec, na.rm=T),
+      .groups='drop') %>%
+    inner_join(rt_stops, by=join_by(from_stop_id == stop_id)) %>%
+    group_by(route_id, parent_station) %>% 
+    slice(which.min(avg_tt)) %>%
+    select(route_id, parent_station, avg_tt, sd_tt)
+} 
 
-Use the above to edit the date filters below if needed:
-
-```{r}
-f23_ttimes_rt <- f23_q3_ttimes_hr %>%
-  rbind(f23_q3_ttimes_lr) %>%
-  filter(service_date >= '2023-08-27') %>%
-  rbind(
-    f23_q4_ttimes_hr %>% rbind(f23_q4_ttimes_lr) %>% filter(service_date <= '2023-12-16')
-  )
-```
-
-```{r}
-rt_stops_f23 <- f23_gtfs$routes %>%
-  filter(route_desc == 'Rapid Transit') %>%
-  inner_join(f23_gtfs$trips, by='route_id') %>%
-  inner_join(f23_gtfs$stop_times, by='trip_id') %>%
-  inner_join(f23_gtfs$stops, by='stop_id') %>%
-  select(stop_id, parent_station, stop_name) %>%
-  unique() %>%
-  mutate(stop_id = as.integer(stop_id)) 
-
-ttime_metrics_f23 <- rt_stops %>%
-  filter(stop_name %in% c('Park Street', 'Downtown Crossing', 'Government Center', 'State')) %>%
-  inner_join(f23_ttimes_rt, by=join_by(stop_id == to_stop_id)) %>%
-  mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
-  group_by(route_id, from_stop_id, stop_id) %>%
-  summarise(
-    runs=n(), 
-    avg_tt = mean(travel_time_sec, na.rm=T), 
-    sd_tt = sd(travel_time_sec, na.rm=T),
-    .groups='drop') %>%
-  inner_join(rt_stops_f23, by=join_by(from_stop_id == stop_id)) %>%
-  group_by(route_id, parent_station) %>% 
-  slice(which.min(avg_tt)) %>%
-  select(route_id, parent_station, avg_tt, sd_tt)
+ttime_metrics_f23 <- travel_time_metrics(q3q4_2023_ttimes_rt, f23_gtfs)
+ttime_metrics_f19 <- travel_time_metrics(q3q4_2019_ttimes_rt, f19_gtfs)
 ```
 
 ```{r}
@@ -316,15 +324,11 @@ rt_stations_f23 %>%
   filter(is.na(avg_tt))
 ```
 
-It also appears that this dataset does not record any travel times from Union Square (stop_id == 70504) to other places, which is odd. It does record travel times from other places to Union Square though, at inbound stop 70503. 
 ```{r}
-rt_stops_f23 %>%
-  filter(parent_station == 'place-unsqu') %>%
-  inner_join(f23_ttimes_rt, by=join_by(stop_id == from_stop_id))
-```
-
-```{r}
-ttime_metrics_f23 %>% write.csv('data/cleaned/stations_routes_f23_travel_times_to_cbd.csv')
+ttime_metrics_f23 %>% 
+  write.csv('data/cleaned/stations_routes_f23_travel_times_to_cbd.csv', row.names=FALSE)
+ttime_metrics_f19 %>% 
+  write.csv('data/cleaned/stations_routes_f19_travel_times_to_cbd.csv', row.names=FALSE)
 ```
 
 # MBTA Rapid Transit Headways 
