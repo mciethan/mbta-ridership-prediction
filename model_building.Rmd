@@ -21,14 +21,19 @@ get_dataset <- function(dataset) {
 xfer_station_names <- c('Park Street', 'Downtown Crossing', 'Government Center', 'State')
 
 model_data_f23 <- get_dataset('f23') %>%
-  inner_join(get_dataset('f23_geoms_nonoverlapping'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_bus_connections'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_headways'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_travel_times_to_cbd'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_pnr_spaces'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_walk_scores'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
   left_join(get_dataset('f23_ridership'), by=c('route_id', 'parent_station')) %>%
-  mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
+  mutate(
+    transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
+    devl_mix = tot_jobs/(tot_pop + tot_jobs)
+    ) %>%
   mutate(route=1) %>% # this creates dummy variables for each route
   pivot_wider(names_from='route_id', values_from='route', values_fill=0)
 ```
@@ -36,11 +41,26 @@ model_data_f23 <- get_dataset('f23') %>%
 ```{r}
 basic_reg <- lm(avg_boardings ~ walk_score + pnr_spaces #+ connecting_bus_routes
                 + connecting_bus_riders + avg_headway + avg_tt + transfer
-                + Red + Orange + Blue
+                + Red + Orange + Blue + avg_median_inc # + tot_jobs + tot_pop 
+                + ppsqft + jobspersqft # + devl_mix
                 , data=model_data_f23)
 
 summary(basic_reg)
 ```
 
+```{r}
+plot(x=model_data_f23$avg_boardings, y=predict(basic_reg),
+     xlab='Actual Boardings',
+     ylab='Predicted Boardings',
+     main='Predicted vs. Actual Boardings by Route & Station')
+abline(a=0, b=1) # draw 1=1 line for reference
 
+# option to add text indicating which stations are over- or under-predicted
+text(x=model_data_f23$avg_boardings, y=predict(basic_reg), adj=c(0.5,1), cex=0.5,
+     labels=str_sub(model_data_f23$stop_name, end=4))
+```
+
+```{r}
+
+```
 
