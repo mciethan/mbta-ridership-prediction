@@ -21,7 +21,8 @@ get_dataset <- function(dataset) {
 xfer_station_names <- c('Park Street', 'Downtown Crossing', 'Government Center', 'State')
 
 model_data_f23 <- get_dataset('f23') %>%
-  inner_join(get_dataset('f23_bus_connections'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('f23_geog_vars'), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset('f23_bus&CR_connections'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_headways'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_travel_times_to_cbd'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('f23_pnr_spaces'), by=c('route_id', 'parent_station')) %>%
@@ -34,30 +35,49 @@ model_data_f23 <- get_dataset('f23') %>%
     transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
     devl_mix = tot_jobs/(tot_pop + tot_jobs)
     ) %>%
-  mutate(route=1) %>% # this creates dummy variables for each route
-  pivot_wider(names_from='route_id', values_from='route', values_fill=0)
+  mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
+  pivot_wider(names_from='route_id_temp', values_from='route', values_fill=0)
+```
+
+Histograms of continuous variables
+```{r}
+c('avg_boardings', 'avg_headway', 'avg_tt', 'walk_score', 'km_from_cbd',  
+  'avg_median_inc', 'ppsqft', 'jobspersqft', 'devl_mix') %>% 
+  lapply(function(var) hist(
+    model_data_f23[[var]], breaks='Sturges', 
+    main=paste('Histogram of', var), xlab=paste('Value of', var)
+    )) %>% invisible()
 ```
 
 ```{r}
-basic_reg <- lm(avg_boardings ~ walk_score + pnr_spaces #+ connecting_bus_routes
+basic_reg <- lm(avg_boardings ~ walk_score + pnr_spaces + connecting_cr_routes
                 + connecting_bus_riders + avg_headway + avg_tt + transfer
-                + Red + Orange + Blue + avg_median_inc # + tot_jobs + tot_pop 
-                + ppsqft + jobspersqft # + devl_mix
+                + Red + Orange + Blue + km_from_cbd
+                + avg_median_inc #+ tot_jobs + tot_pop 
+                + ppsqft + jobspersqft #+ devl_mix
                 , data=model_data_f23)
 
 summary(basic_reg)
 ```
 
 ```{r}
-plot(x=model_data_f23$avg_boardings, y=predict(basic_reg),
-     xlab='Actual Boardings',
-     ylab='Predicted Boardings',
-     main='Predicted vs. Actual Boardings by Route & Station')
-abline(a=0, b=1) # draw 1=1 line for reference
+plot_y_yhat_w_labels <- function(x, y, xy_prefix) {
+  plot(x=x, y=y,
+       xlab=paste(xy_prefix, 'Actual Boardings'),
+       ylab=paste(xy_prefix, 'Predicted Boardings'),
+       main=paste(xy_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
+  abline(a=0, b=1) # draw 1=1 line for reference
+  
+  # option to add text indicating which stations are over- or under-predicted
+  text(x=x, y=y, adj=c(0.5,1), cex=0.5,
+       labels=paste0(
+         str_sub(model_data_f23$route_id, end=1), 
+         '-', str_sub(model_data_f23$stop_name, end=3))
+       )
+}
 
-# option to add text indicating which stations are over- or under-predicted
-text(x=model_data_f23$avg_boardings, y=predict(basic_reg), adj=c(0.5,1), cex=0.5,
-     labels=str_sub(model_data_f23$stop_name, end=4))
+plot_y_yhat_w_labels(model_data_f23$avg_boardings, predict(basic_reg), '')
+plot_y_yhat_w_labels(log(model_data_f23$avg_boardings), log(predict(basic_reg)), 'Logged')
 ```
 
 ```{r}
