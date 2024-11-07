@@ -150,7 +150,7 @@ f19_headways %>% select(-service_count) %>%
   write.csv('data/cleaned/stations_routes_f19_headways.csv', row.names=FALSE)
 ```
 
-## Calculate the number of bus routes and riders that connect to each station
+## Calculate the number of bus / CR routes and riders that connect to each station
 
 ```{r}
 rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
@@ -201,23 +201,49 @@ f19_buses <- f19_gtfs %>% calc_bus_metrics(bus_rdrs_f19)
 ```
 
 ```{r}
-clean_bus_connections <- function(rt_stations_df, buses_df) {
+calc_cr_metrics <- function(gtfs) {
+  gtfs$stops %>% 
+    inner_join(gtfs$stop_times, by='stop_id') %>%
+    inner_join(gtfs$trips, by='trip_id') %>%
+    inner_join(gtfs$routes, by='route_id') %>%
+    # the idea to filter by listed_route != 1 comes from the MBTA GTFS documentation:
+    # https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs.md#routestxt
+    # in practice, it filters out a handful of variants that aren't really their own routes
+    filter(route_desc == 'Commuter Rail', listed_route != '1') %>%
+    select(parent_station, route_id) %>%
+    unique() %>%
+    group_by(parent_station) %>%
+    summarise(cr_rte_count = n(), .groups='drop')
+}
+
+f23_cr <- f23_gtfs %>% calc_cr_metrics()
+f19_cr <- f19_gtfs %>% calc_cr_metrics()
+```
+
+```{r}
+clean_connections <- function(rt_stations_df, buses_df, cr_df) {
   rt_stations_df %>%
     left_join(buses_df, by='parent_station') %>%
-    mutate(connecting_bus_routes = case_when(
+    left_join(cr_df, by='parent_station') %>%
+    mutate(
+      connecting_cr_routes = case_when(
+        is.na(cr_rte_count) ~ 0, .default=cr_rte_count
+      ),
+      connecting_bus_routes = case_when(
         is.na(bus_rte_count) ~ 0, .default=bus_rte_count
       ),
       connecting_bus_riders = case_when(
         is.na(bus_rte_riders) ~ 0, .default=bus_rte_riders
       )) %>%
-    select(route_id, parent_station, connecting_bus_routes, connecting_bus_riders)
+    select(route_id, parent_station, connecting_cr_routes, 
+           connecting_bus_routes, connecting_bus_riders)
 }
 
-rt_stations_f23 %>% clean_bus_connections(f23_buses) %>%
-  write.csv('data/cleaned/stations_routes_f23_bus_connections.csv', row.names=FALSE)
+rt_stations_f23 %>% clean_connections(f23_buses, f23_cr) %>%
+  write.csv('data/cleaned/stations_routes_f23_bus&CR_connections.csv', row.names=FALSE)
 
-rt_stations_f19 %>% clean_bus_connections(f19_buses) %>%
-  write.csv('data/cleaned/stations_routes_f19_bus_connections.csv', row.names=FALSE)
+rt_stations_f19 %>% clean_connections(f19_buses, f19_cr) %>%
+  write.csv('data/cleaned/stations_routes_f19_bus&CR_connections.csv', row.names=FALSE)
 ```
 
 For travel times and headways, we can either use schedules (reflecting "promised" service) or actual service. For schedules, we just need the GTFS. For actuals, we need GTFS and the travel time and headway datasets described below.
