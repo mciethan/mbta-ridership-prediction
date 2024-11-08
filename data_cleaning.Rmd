@@ -528,20 +528,37 @@ rt_stations_f19 %>% join_ctps() %>% write.csv('data/cleaned/stations_routes_f19_
 
 ```{r}
 ws <- read.csv('data/rapid_trans_facilities_wlkscore.csv')
+rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
+rt_stations_f19 <- read.csv('data/cleaned/stations_routes_f19.csv')
 ```
 
 ```{r}
-# this should have 0 rows. Any rows represent stations that didn't join to the walk scores
+# these selections should have 0 rows. Any rows represent stations that didn't join to the walk scores
 rt_stations_f23 %>%
+  left_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
+  filter(is.na(walk_score))
+
+rt_stations_f19 %>% select(-stop_name) %>%
+  left_join(rt_stations_f23 %>% select(stop_name, route_id, parent_station), 
+             by=c('route_id', 'parent_station')) %>%
   left_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
   filter(is.na(walk_score))
 ```
 
+The three missing-score stops from 2019 are the stops that were removed in the B branch consolidation project. Could be nice to get walk scores for those, but they can be removed for now
+
 ```{r}
 rt_stations_f23 %>%
-  left_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
+  inner_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
   select(route_id, parent_station, walk_score) %>%
   write.csv('data/cleaned/stations_routes_f23_walk_scores.csv', row.names=FALSE)
+
+rt_stations_f19 %>% select(-stop_name) %>%
+  inner_join(rt_stations_f23 %>% select(stop_name, route_id, parent_station), 
+             by=c('route_id', 'parent_station')) %>%
+  inner_join(ws %>% select(stop_name, walk_score), by='stop_name') %>%
+  select(route_id, parent_station, walk_score) %>%
+  write.csv('data/cleaned/stations_routes_f19_walk_scores.csv', row.names=FALSE)
 ```
 
 # Geography
