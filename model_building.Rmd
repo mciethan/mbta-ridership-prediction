@@ -20,24 +20,31 @@ get_dataset <- function(dataset) {
 
 xfer_station_names <- c('Park Street', 'Downtown Crossing', 'Government Center', 'State')
 
-model_data_f23 <- get_dataset('f23') %>%
-  inner_join(get_dataset('f23_geog_vars'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('f23_bus&CR_connections'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('f23_headways'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('f23_travel_times_to_cbd'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('f23_pnr_spaces'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('f23_walk_scores'), by=c('route_id', 'parent_station')) %>%
+get_model_data <- function(season) {
+  get_dataset(season) %>%
+  inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset(paste(season, 'headways', sep='_')), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
+  inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
-  left_join(get_dataset('f23_ridership'), by=c('route_id', 'parent_station')) %>%
+  left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
   mutate(
     transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
     devl_mix = tot_jobs/(tot_pop + tot_jobs)
     ) %>%
   mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
   pivot_wider(names_from='route_id_temp', values_from='route', values_fill=0)
+}
+
+model_data_f23 <- get_model_data('f23')
+model_data_f19 <- get_model_data('f19')
 ```
+
+## Descriptive Statistics
 
 Histograms of continuous variables
 ```{r}
@@ -49,13 +56,17 @@ c('avg_boardings', 'avg_headway', 'avg_tt', 'walk_score', 'km_from_cbd',
     )) %>% invisible()
 ```
 
+## Model Building
+
 ```{r}
+model <- model_data_f23 # %>% filter(in_bos == 1) # uncomment this to do Boston-only model
+
 basic_reg <- lm(avg_boardings ~ walk_score + pnr_spaces + connecting_cr_routes
                 + connecting_bus_riders + avg_headway + avg_tt + transfer
                 + Red + Orange + Blue + km_from_cbd
                 + avg_median_inc #+ tot_jobs + tot_pop 
                 + ppsqft + jobspersqft #+ devl_mix
-                , data=model_data_f23)
+                , data=model)
 
 summary(basic_reg)
 ```
@@ -71,13 +82,13 @@ plot_y_yhat_w_labels <- function(x, y, xy_prefix) {
   # option to add text indicating which stations are over- or under-predicted
   text(x=x, y=y, adj=c(0.5,1), cex=0.5,
        labels=paste0(
-         str_sub(model_data_f23$route_id, end=1), 
-         '-', str_sub(model_data_f23$stop_name, end=3))
+         str_sub(model$route_id, end=1), 
+         '-', str_sub(model$stop_name, end=3))
        )
 }
 
-plot_y_yhat_w_labels(model_data_f23$avg_boardings, predict(basic_reg), '')
-plot_y_yhat_w_labels(log(model_data_f23$avg_boardings), log(predict(basic_reg)), 'Logged')
+plot_y_yhat_w_labels(model$avg_boardings, predict(basic_reg), '')
+plot_y_yhat_w_labels(log(model$avg_boardings), log(predict(basic_reg)), 'Logged')
 ```
 
 ```{r}
