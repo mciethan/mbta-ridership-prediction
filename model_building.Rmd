@@ -32,10 +32,14 @@ get_model_data <- function(season) {
   inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
   inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
   left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
+  mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
   mutate(
-    transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
-    devl_mix = tot_jobs/(tot_pop + tot_jobs),
-    avg_median_inc_1000s = avg_median_inc/1000,
+    devl_mix = tot_jobs/(tot_pop + tot_jobs), 
+    jobs_per_acre = mean_jobs_sqft*43560,
+    pop_per_acre = ppsqft*43560, 
+    connecting_bus_riders_100s = connecting_bus_riders/100,
+    median_inc_1000s = avg_median_inc/1000, 
+    pnr_spaces_100s = pnr_spaces/100,
     .keep='unused'
     ) %>%
   mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
@@ -50,12 +54,12 @@ model_data_f19 <- get_model_data('f19')
 
 ```{r}
 continuous_vars <- c('avg_boardings', 'avg_headway', 'avg_tt', 'walk_score', 'km_from_cbd', 
-                     'avg_median_inc_1000s', 'ppsqft', 'jobspersqft', 'devl_mix')
-sparse_vars <- c('connecting_bus_routes', 'connecting_bus_riders', 'connecting_cr_routes', 'pnr_spaces')
+                     'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 'devl_mix')
+sparse_vars <- c('connecting_bus_routes', 'connecting_bus_riders_100s', 'connecting_cr_routes', 'pnr_spaces_100s')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'in_bos')
 
 
-numeric_data <- model_data_f23 %>% select(c(continuous_vars, sparse_vars))
+numeric_data <- model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars)))
 summary(numeric_data) # minimum, median, mean, maximum, and interquartile range for each variable
 ```
 
@@ -82,49 +86,108 @@ sparse_vars %>%
     )) %>% invisible()
 ```
 
+```{r}
+model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
+```
+
 ## Model Building
 
 ```{r}
-basic_reg <- function(model) {
-  lm(avg_boardings ~ walk_score + pnr_spaces + connecting_cr_routes
-     + connecting_bus_riders + avg_headway + avg_tt + transfer # + sd_tt
-     + Red + Orange + Blue + km_from_cbd
-     + avg_median_inc_1000s #+ tot_jobs + tot_pop 
-     + ppsqft + jobspersqft #+ devl_mix
-     , data=model)
+base_reg <- function(model_data) {
+  lm(avg_boardings ~ avg_headway + avg_tt + transfer + Red + Orange + Blue
+     + connecting_cr_routes + connecting_bus_riders_100s + pnr_spaces_100s
+     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
+     , data=model_data
+     )
 }
 
-reg_f23 <- model_data_f23 %>% 
-  # filter(in_bos == 1) %>% # uncomment this to do Boston-only model
-  basic_reg() %>% summary()
+enhanced_reg <- function(model_data) {
+  lm(avg_boardings ~ avg_headway + avg_tt + transfer + Red + Orange + Blue
+     + connecting_cr_routes + connecting_bus_riders_100s + pnr_spaces_100s
+     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre
+     # TODO: add enhanced variables
+     , data=model_data
+     ) 
+}
 
-reg_f19 <- model_data_f19 %>% 
-  # filter(in_bos == 1) %>% # uncomment this to do Boston-only model
-  basic_reg() %>% summary()
+specifications <- list(
+  "Fall 2019" = model_data_f19, 
+  "Fall 2023" = model_data_f23, 
+  "Fall 2019 (Boston only)" = model_data_f19 %>% filter(in_bos == 1),
+  "Fall 2023 (Boston only)" = model_data_f23 %>% filter(in_bos == 1)
+)
 
-reg_f19$coefficients %>% cbind(reg_f23$coefficients) %>% round(2)
-reg_f19$adj.r.squared %>% cbind(reg_f23$adj.r.squared)
+base_regressions <- specifications %>% lapply(base_reg)
+base_summaries <- base_regressions %>% lapply(summary)
+
+# TODO: set up to run both base and enhanced
+coefficients <- base_summaries %>% lapply(function(reg) reg$coefficients)
+adj_r2s <- base_summaries %>% lapply(function(reg) reg$adj.r.squared)
+f_stats <- base_summaries %>% lapply(function(reg) reg$fstatistic)
+
+base_summaries[['Fall 2023']]
 ```
 
+Create and save a formatted table for easier comparison across specifications
 ```{r}
-plot_y_yhat_w_labels <- function(x, y, xy_prefix) {
-  plot(x=x, y=y,
+rc <- function(n, digits) round(n, digits) %>% as.character()
+
+format_results <- function(result) {
+  result['Estimate'] %>%
+    rc(2) %>%
+    paste(paste0('(se=', result['Std. Error'] %>% rc(2), ', t=', result['t value'] %>% rc(2), ')'))
+}
+
+compare_specifications <- function(var) {
+  coefficients %>% 
+    lapply(function(df) format_results(df[var,])) %>% 
+    as.data.frame()
+}
+
+var_names <- coefficients[['Fall 2023']] %>% row.names()
+
+formatted_output <- var_names %>%
+  lapply(compare_specifications) %>%
+  bind_rows() %>%
+  `row.names<-`(var_names) %>%
+  bind_rows(
+    adj_r2s %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`('Adjusted R Squared'),
+    f_stats %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
+  )
+formatted_output %>% write.csv('formatted_output_base.csv')
+formatted_output
+```
+
+Predicted vs Actual plots
+
+```{r}
+plot_y_yhat_w_labels <- function(df, yhat, xy_prefix) {
+  plot(x=df$avg_boardings, y=yhat, pch=16,
        xlab=paste(xy_prefix, 'Actual Boardings'),
        ylab=paste(xy_prefix, 'Predicted Boardings'),
        main=paste(xy_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
   abline(a=0, b=1) # draw 1=1 line for reference
   
   # option to add text indicating which stations are over- or under-predicted
-  text(x=x, y=y, adj=c(0.5,1), cex=0.5,
-       labels=paste0(
-         str_sub(model$route_id, end=1), 
-         '-', str_sub(model$stop_name, end=3))
-       )
+  # text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
+  #      labels=paste0(
+  #        str_sub(df$route_id, end=1), 
+  #        '-', str_sub(df$stop_name, end=3))
+  #      )
 }
 
-plot_y_yhat_w_labels(model$avg_boardings, predict(basic_reg), '')
-plot_y_yhat_w_labels(log(model$avg_boardings), log(predict(basic_reg)), 'Logged')
+specifications[['Fall 2023']] %>%
+  plot_y_yhat_w_labels(predict(base_regressions[['Fall 2023']]), '')
+
+specifications[['Fall 2023']] %>%
+  mutate(avg_boardings = log(avg_boardings)) %>%
+  plot_y_yhat_w_labels(predict(base_regressions[['Fall 2023']]) %>% log(), 'Logged')
 ```
+
+```{r}
+specifications[['Fall 2023']]
+```
+
 
 # TODO: take a preferred specification and do cross-validation 
 
