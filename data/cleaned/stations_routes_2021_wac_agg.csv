@@ -1,4 +1,4 @@
-,route_id,parent_station,jobspersqft,tot_jobs
+,route_id,parent_station,mean_jobs_sqft,tot_jobs
 0,Blue,place-aport,0.00011325664562319273,625
 1,Blue,place-aqucl,0.0016052955392742063,5169
 2,Blue,place-bmmnl,5.625608583507684e-05,232
