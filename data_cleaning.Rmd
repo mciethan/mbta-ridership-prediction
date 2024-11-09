@@ -124,6 +124,7 @@ headways_per_station_route <- function(gtfs) {
     inner_join(gtfs$stops, by='stop_id') %>%
     mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
     group_by(route_id, parent_station) %>%
+    # avg headway = total time elapsed divided by total number of departures during the period
     summarise(avg_headway = round(16*3600/n()), service_count = n_distinct(service_id), .groups='drop') 
 }
 
