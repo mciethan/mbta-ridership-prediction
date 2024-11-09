@@ -606,7 +606,67 @@ rt_stations_f19 %>% calc_geog_metrics() %>%
 2023 and 2019 data download links and data dictionaries available from https://nces.ed.gov/ipeds/datacenter/DataFiles.aspx?gotoReportId=7&fromIpeds=true 
 
 ```{r}
-hd <- read.csv('data/ipeds/hd2023.csv')
-effy <- read.csv('data/ipeds/effy2023.csv')
+# directory information - contains the names and coords of educational institutions
+hd_23 <- read.csv('data/ipeds/hd2023.csv')
+hd_19 <- read.csv('data/ipeds/hd2019.csv')
+
+# 12-month enrollment per educational institution
+effy_23 <- read.csv('data/ipeds/effy2023.csv')
+effy_19 <- read.csv('data/ipeds/effy2019.csv')
+
+# station-area geometries to which we will join the institution coordinates
+rt_station_geoms_f23 <- read.csv('data/cleaned/stations_routes_f23_geoms_nonoverlapping.csv')
+rt_station_geoms_f19 <- read.csv('data/cleaned/stations_routes_f19_geoms_nonoverlapping.csv')
+```
+
+```{r}
+library(sf) 
+
+enrollment_23 <- effy_23 %>%
+  filter(EFFYALEV == 1) %>% # this code is for the "All students total" slice
+  select(UNITID, EFYTOTLT) # this variable is the actual enrollment number
+
+# annoyingly, the variable name changed slightly from EFFYLEV to EFFYALEV
+enrollment_19 <- effy_23 %>%
+  filter(EFFYLEV == 1) %>% # this code is for the "All students total" slice
+  select(UNITID, EFYTOTLT) # this variable is the actual enrollment number
+
+ma_college_data <- function(hd, enrollment) {
+  hd %>%
+    filter(STABBR == 'MA') %>%
+    select(UNITID, INSTNM, LONGITUD, LATITUDE) %>%
+    inner_join(enrollment, by='UNITID') %>%
+    st_as_sf(crs=4326, coords = c("LONGITUD","LATITUDE")) %>%
+    st_transform(crs=26986) # convert from lat-long to projected coord system for MA
+}
+
+ma_colleges_23 <- ma_college_data(hd_23, enrollment_23)
+ma_colleges_19 <- ma_college_data(hd_19, enrollment_19)
+```
+
+```{r}
+join_college_data <- function(rt_station_geoms, ma_college_df) {
+  rt_station_geoms_f23 %>%
+    st_as_sf(crs=4326, wkt = "walk_poly_wkt") %>%
+    st_transform(crs=26986) %>%
+    st_join(ma_colleges_23, join=st_intersects, left=TRUE) %>%
+    
+    # splits point enrollments evenly across intersecting station areas - unsure whether to use this
+    group_by(UNITID) %>%
+    mutate(EFYTOTLT = EFYTOTLT/n()) %>%
+    ungroup() %>%
+  
+    group_by(route_id, parent_station) %>%
+    summarise(college_students = sum(EFYTOTLT, na.rm=T), .groups='drop') %>%
+    st_drop_geometry()
+}
+
+rt_station_geoms_f23 %>% 
+  join_college_data(ma_colleges_23) %>%
+  write.csv('data/cleaned/stations_routes_f23_colleges.csv', row.names=FALSE)
+
+rt_station_geoms_f19 %>% 
+  join_college_data(ma_colleges_19) %>%
+  write.csv('data/cleaned/stations_routes_f19_colleges.csv', row.names=FALSE)
 ```
 
