@@ -651,7 +651,7 @@ join_college_data <- function(rt_station_geoms, ma_college_df) {
     st_transform(crs=26986) %>%
     st_join(ma_colleges_23, join=st_intersects, left=TRUE) %>%
     
-    # splits point enrollments evenly across intersecting station areas - unsure whether to use this
+    # splits point enrollments evenly across intersecting station areas
     group_by(UNITID) %>%
     mutate(EFYTOTLT = EFYTOTLT/n()) %>%
     ungroup() %>%

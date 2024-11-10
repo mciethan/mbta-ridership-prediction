@@ -22,28 +22,30 @@ xfer_station_names <- c('Park Street', 'Downtown Crossing', 'Government Center',
 
 get_model_data <- function(season) {
   get_dataset(season) %>%
-  inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset(paste(season, 'headways', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
-  inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
-  left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
-  mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
-  mutate(
-    devl_mix = tot_jobs/(tot_pop + tot_jobs), 
-    jobs_per_acre = mean_jobs_sqft*43560,
-    pop_per_acre = ppsqft*43560, 
-    connecting_bus_riders_100s = connecting_bus_riders/100,
-    median_inc_1000s = avg_median_inc/1000, 
-    pnr_spaces_100s = pnr_spaces/100,
-    .keep='unused'
-    ) %>%
-  mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
-  pivot_wider(names_from='route_id_temp', values_from='route', values_fill=0)
+    inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'headways', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=c('route_id', 'parent_station')) %>%  
+    left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
+    mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
+    mutate(
+      devl_mix = tot_jobs/(tot_pop + tot_jobs), 
+      jobs_per_acre = mean_jobs_sqft*43560,
+      pop_per_acre = ppsqft*43560, 
+      college_students_1000s = college_students/1000,
+      connecting_bus_riders_100s = connecting_bus_riders/100,
+      median_inc_1000s = avg_median_inc/1000, 
+      pnr_spaces_100s = pnr_spaces/100,
+      .keep='unused'
+      ) %>%
+    mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
+    pivot_wider(names_from='route_id_temp', values_from='route', values_fill=0)
 }
 
 model_data_f23 <- get_model_data('f23')
@@ -55,7 +57,7 @@ model_data_f19 <- get_model_data('f19')
 ```{r}
 continuous_vars <- c('avg_boardings', 'avg_headway', 'avg_tt', 'walk_score', 'km_from_cbd', 
                      'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 'devl_mix')
-sparse_vars <- c('connecting_bus_routes', 'connecting_bus_riders_100s', 'connecting_cr_routes', 'pnr_spaces_100s')
+sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes', 'pnr_spaces_100s', 'college_students_1000s')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'in_bos')
 
 
@@ -63,9 +65,25 @@ numeric_data <- model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars)
 summary(numeric_data) # minimum, median, mean, maximum, and interquartile range for each variable
 ```
 
-For dummy variables (0 or 1), show what number and percent of observations do the 1's represent
+For dummy variables (0 or 1), show what number and percent of observations the 1's represent
 ```{r}
-model_data_f23 %>% summarise(across(all_of(dummy_vars), list(num = sum, pct = mean)))
+model_data_f23 %>% 
+  summarise(across(all_of(dummy_vars), list(num_1s = sum, pct_1s = mean))) %>%
+  t()
+```
+
+For sparse variables, show what number and percent of observations the 0's represent
+```{r}
+sum_zeroes <- function(x) {
+  sum(x==0)
+}
+
+pct_zeroes <- function(x) {
+  sum(x==0)/length(x)
+}
+model_data_f23 %>% 
+  summarise(across(all_of(sparse_vars), list(num_0s = sum_zeroes, pct_0s = pct_zeroes))) %>%
+  t()
 ```
 
 Histograms of continuous variables
@@ -86,6 +104,7 @@ sparse_vars %>%
     )) %>% invisible()
 ```
 
+Pairs plot
 ```{r}
 model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 ```
@@ -105,7 +124,7 @@ enhanced_reg <- function(model_data) {
   lm(avg_boardings ~ avg_headway + avg_tt + transfer + Red + Orange + Blue
      + connecting_cr_routes + connecting_bus_riders_100s + pnr_spaces_100s
      + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre
-     # TODO: add enhanced variables
+     + college_students_1000s
      , data=model_data
      ) 
 }
@@ -117,15 +136,20 @@ specifications <- list(
   "Fall 2023 (Boston only)" = model_data_f23 %>% filter(in_bos == 1)
 )
 
-base_regressions <- specifications %>% lapply(base_reg)
-base_summaries <- base_regressions %>% lapply(summary)
+base_regressions <- specifications %>% lapply(base_reg) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "base")))
+enhanced_regressions <- specifications %>% lapply(enhanced_reg) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "enhanced")))
+
+regressions <- base_regressions %>% c(enhanced_regressions)
+summaries <- regressions %>% lapply(summary)
 
 # TODO: set up to run both base and enhanced
-coefficients <- base_summaries %>% lapply(function(reg) reg$coefficients)
-adj_r2s <- base_summaries %>% lapply(function(reg) reg$adj.r.squared)
-f_stats <- base_summaries %>% lapply(function(reg) reg$fstatistic)
+coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
+adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
+f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 
-base_summaries[['Fall 2023']]
+summaries[['Fall 2023 enhanced']]
 ```
 
 Create and save a formatted table for easier comparison across specifications
@@ -140,11 +164,14 @@ format_results <- function(result) {
 
 compare_specifications <- function(var) {
   coefficients %>% 
-    lapply(function(df) format_results(df[var,])) %>% 
+    lapply(function(df) {
+      if (var %in% row.names(df)) format_results(df[var,]) 
+      else '--'
+    }) %>% 
     as.data.frame()
 }
 
-var_names <- coefficients[['Fall 2023']] %>% row.names()
+var_names <- coefficients[['Fall 2023 enhanced']] %>% row.names() 
 
 formatted_output <- var_names %>%
   lapply(compare_specifications) %>%
@@ -154,7 +181,7 @@ formatted_output <- var_names %>%
     adj_r2s %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`('Adjusted R Squared'),
     f_stats %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
   )
-formatted_output %>% write.csv('formatted_output_base.csv')
+formatted_output %>% write.csv('formatted_output.csv')
 formatted_output
 ```
 
@@ -168,26 +195,22 @@ plot_y_yhat_w_labels <- function(df, yhat, xy_prefix) {
        main=paste(xy_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
   abline(a=0, b=1) # draw 1=1 line for reference
   
-  # option to add text indicating which stations are over- or under-predicted
+  # # option to add station labels to help identify the kinds of places we're over- or under-predicting
   # text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
   #      labels=paste0(
-  #        str_sub(df$route_id, end=1), 
+  #        str_sub(df$route_id, end=1),
   #        '-', str_sub(df$stop_name, end=3))
   #      )
 }
 
 specifications[['Fall 2023']] %>%
-  plot_y_yhat_w_labels(predict(base_regressions[['Fall 2023']]), '')
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 enhanced']]), '')
 
 specifications[['Fall 2023']] %>%
   mutate(avg_boardings = log(avg_boardings)) %>%
-  plot_y_yhat_w_labels(predict(base_regressions[['Fall 2023']]) %>% log(), 'Logged')
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 enhanced']]) %>% log(), 'Logged')
 ```
 
-```{r}
-specifications[['Fall 2023']]
-```
-
-
+ 
 # TODO: take a preferred specification and do cross-validation 
 
