@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(car) # for the vif function to test multicollinearity
 library(tidyverse)
 ```
 
@@ -35,7 +36,7 @@ get_model_data <- function(season) {
     left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
     mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
     mutate(
-      devl_mix = tot_jobs/(tot_pop + tot_jobs), 
+      #devl_mix = tot_jobs/(tot_pop + tot_jobs), 
       jobs_per_acre = mean_jobs_sqft*43560,
       pop_per_acre = ppsqft*43560, 
       college_students_1000s = college_students/1000,
@@ -81,6 +82,7 @@ sum_zeroes <- function(x) {
 pct_zeroes <- function(x) {
   sum(x==0)/length(x)
 }
+
 model_data_f23 %>% 
   summarise(across(all_of(sparse_vars), list(num_0s = sum_zeroes, pct_0s = pct_zeroes))) %>%
   t()
@@ -113,17 +115,17 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 
 ```{r}
 base_reg <- function(model_data) {
-  lm(avg_boardings ~ avg_headway + avg_tt + transfer + Red + Orange + Blue
-     + connecting_cr_routes + connecting_bus_riders_100s + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
+  lm(avg_boardings ~ avg_headway + Red + Orange + Blue + transfer
+     + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
+     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre 
      , data=model_data
      )
 }
 
 enhanced_reg <- function(model_data) {
-  lm(avg_boardings ~ avg_headway + avg_tt + transfer + Red + Orange + Blue
-     + connecting_cr_routes + connecting_bus_riders_100s + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre
+  lm(avg_boardings ~ avg_headway + Red + Orange + Blue + transfer
+     + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
+     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre
      + college_students_1000s
      , data=model_data
      ) 
@@ -144,12 +146,12 @@ enhanced_regressions <- specifications %>% lapply(enhanced_reg) %>%
 regressions <- base_regressions %>% c(enhanced_regressions)
 summaries <- regressions %>% lapply(summary)
 
-# TODO: set up to run both base and enhanced
 coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
 adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 
-summaries[['Fall 2023 enhanced']]
+summaries[['Fall 2023 enhanced']] # display summary for a single specification
+regressions %>% lapply(vif) # test for multicollinearity across models
 ```
 
 Create and save a formatted table for easier comparison across specifications
@@ -181,9 +183,15 @@ formatted_output <- var_names %>%
     adj_r2s %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`('Adjusted R Squared'),
     f_stats %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
   )
-formatted_output %>% write.csv('formatted_output.csv')
+
 formatted_output
 ```
+
+Write the formatted output to csv if we like it
+```{r}
+formatted_output %>% write.csv('formatted_output.csv')
+```
+
 
 Predicted vs Actual plots
 
@@ -195,12 +203,12 @@ plot_y_yhat_w_labels <- function(df, yhat, xy_prefix) {
        main=paste(xy_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
   abline(a=0, b=1) # draw 1=1 line for reference
   
-  # # option to add station labels to help identify the kinds of places we're over- or under-predicting
-  # text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
-  #      labels=paste0(
-  #        str_sub(df$route_id, end=1),
-  #        '-', str_sub(df$stop_name, end=3))
-  #      )
+  # option to add station labels to help identify the kinds of places we're over- or under-predicting
+  text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
+       labels=paste0(
+         str_sub(df$route_id, end=1),
+         '-', str_sub(df$stop_name, end=3))
+       )
 }
 
 specifications[['Fall 2023']] %>%
