@@ -114,28 +114,37 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 ## Model Building
 
 ```{r}
-base_reg <- function(model_data) {
-  lm(avg_boardings ~ avg_headway + Red + Orange + Blue + transfer
+# these functions spit out regressions for a given dataframe and dependent variable name,
+# specified through a list of named parameters "data" and "y"
+
+base_reg <- function(params) {
+  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_tt + 
+       avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
      + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre 
-     , data=model_data
-     )
+     , data=params$data
+     )))
 }
 
-enhanced_reg <- function(model_data) {
-  lm(avg_boardings ~ avg_headway + Red + Orange + Blue + transfer
+enhanced_reg <- function(params) { 
+  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_tt + 
+       avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre
+     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre 
      + college_students_1000s
-     , data=model_data
-     ) 
+     , data=params$data
+     )))
 }
 
 specifications <- list(
-  "Fall 2019" = model_data_f19, 
-  "Fall 2023" = model_data_f23, 
-  "Fall 2019 (Boston only)" = model_data_f19 %>% filter(in_bos == 1),
-  "Fall 2023 (Boston only)" = model_data_f23 %>% filter(in_bos == 1)
+  "Fall 2019 weekday" = list(data=model_data_f19, y='avg_boardings_wkdy'), 
+  "Fall 2023 weekday" = list(data=model_data_f23, y='avg_boardings_wkdy'),
+  "Fall 2019 weekday (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), y='avg_boardings_wkdy'),
+  "Fall 2023 weekday (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), y='avg_boardings_wkdy'),
+  "Fall 2019 weekend" = list(data=model_data_f19, y='avg_boardings_wknd'), 
+  "Fall 2023 weekend" = list(data=model_data_f23, y='avg_boardings_wknd'),
+  "Fall 2019 weekend (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), y='avg_boardings_wknd'),
+  "Fall 2023 weekend (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), y='avg_boardings_wknd')
 )
 
 base_regressions <- specifications %>% lapply(base_reg) %>%
@@ -150,11 +159,15 @@ coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
 adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 
-summaries[['Fall 2023 enhanced']] # display summary for a single specification
-regressions %>% lapply(vif) # test for multicollinearity across models
+summaries[['Fall 2023 weekend enhanced']] # display summary for a single specification
 ```
 
-Create and save a formatted table for easier comparison across specifications
+Calculate the variance inflation factor per variable (to test for multicollinearity) across all models
+```{r}
+regressions %>% lapply(vif)
+```
+
+Create a formatted table for easier comparison across specifications
 ```{r}
 rc <- function(n, digits) round(n, digits) %>% as.character()
 
@@ -173,7 +186,7 @@ compare_specifications <- function(var) {
     as.data.frame()
 }
 
-var_names <- coefficients[['Fall 2023 enhanced']] %>% row.names() 
+var_names <- coefficients[[length(coefficients)]] %>% row.names() # get variable names from the last model
 
 formatted_output <- var_names %>%
   lapply(compare_specifications) %>%
@@ -189,14 +202,14 @@ formatted_output
 
 Write the formatted output to csv if we like it
 ```{r}
-formatted_output %>% write.csv('formatted_output.csv')
+formatted_output %>% write.csv('formatted_output.csv', row.names = TRUE)
 ```
 
 
 Predicted vs Actual plots
 
 ```{r}
-plot_y_yhat_w_labels <- function(df, yhat, xy_prefix) {
+plot_y_yhat_w_labels <- function(df, yhat, xy_prefix, add_labels=FALSE) {
   plot(x=df$avg_boardings, y=yhat, pch=16,
        xlab=paste(xy_prefix, 'Actual Boardings'),
        ylab=paste(xy_prefix, 'Predicted Boardings'),
@@ -204,21 +217,35 @@ plot_y_yhat_w_labels <- function(df, yhat, xy_prefix) {
   abline(a=0, b=1) # draw 1=1 line for reference
   
   # option to add station labels to help identify the kinds of places we're over- or under-predicting
-  text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
+  if (add_labels) {
+    text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
        labels=paste0(
          str_sub(df$route_id, end=1),
          '-', str_sub(df$stop_name, end=3))
        )
+  }
 }
-
-specifications[['Fall 2023']] %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 enhanced']]), '')
-
-specifications[['Fall 2023']] %>%
-  mutate(avg_boardings = log(avg_boardings)) %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 enhanced']]) %>% log(), 'Logged')
 ```
 
- 
+```{r}
+specifications[['Fall 2023 weekday']]$data %>%
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekday base']]), '')
+
+specifications[['Fall 2023 weekday']]$data %>%
+  mutate(avg_boardings = log(avg_boardings)) %>%
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekday base']]) %>% log(), 'Logged')
+```
+
+```{r}
+specifications[['Fall 2023 weekend']]$data %>%
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekend base']]), '', add_labels=TRUE)
+
+specifications[['Fall 2023 weekend']]$data %>%
+  mutate(avg_boardings = log(avg_boardings)) %>%
+  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekend base']]) %>% log(), 'Logged', add_labels=TRUE)
+```
+
+# TODO: actual vs predicted total ridership
+# TODO: actual vs predicted map of stations
 # TODO: take a preferred specification and do cross-validation 
 
