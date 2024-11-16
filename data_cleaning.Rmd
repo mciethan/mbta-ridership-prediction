@@ -23,28 +23,60 @@ ridership_f17_to_f19 <- read.csv('data/mbta/rail_ridership_stops_F17toF19.csv')
 ```
 
 ```{r}
-f23_clean <- ridership_f23 %>% 
-  group_by(season, route_id, parent_station) %>%
-  summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
-  mutate(
-    avg_boardings = total_ons/number_service_days, 
-    avg_alightings = total_offs/number_service_days,
-    .keep='unused'
-    )
+ridership_f23 %>%
+  select(day_type_id, time_period_name) %>%
+  unique()
+```
 
-f19_clean <- ridership_f17_to_f19 %>% 
-  filter(season=='Fall 2019') %>% 
-  mutate(parent_station = stop_id) %>%
-  group_by(season, route_id, parent_station) %>%
-  summarise(across(c(total_ons, total_offs, number_service_days), sum), .groups='drop') %>%
-  mutate(
-    avg_boardings = total_ons/number_service_days, 
-    avg_alightings = total_offs/number_service_days,
-    .keep='unused'
-    )
 
-f19_clean %>% write.csv('data/cleaned/stations_routes_f19_ridership.csv')
-f23_clean %>% write.csv('data/cleaned/stations_routes_f23_ridership.csv')
+```{r}
+clean_ridership <- function(ridership) {
+  riders_day_type <- ridership %>% 
+    group_by(season, day_type_id, route_id, parent_station) %>%
+    summarise( # first, sum up across time periods within the weekday day type
+      across(c(total_ons, total_offs), sum), 
+      num_svc_days = mean(number_service_days), # service days are the same within day types
+      .groups='drop') %>% 
+    mutate( # and create a binary daytype of just weekday vs weekend
+      daytype = case_when(day_type_id == 'day_type_01' ~ 'wkdy', .default='wknd')
+      ) 
+  
+  riders_fullweek <- riders_day_type %>%
+    group_by(season, route_id, parent_station) %>%
+    summarise( # sum up the three day types (weekday, sat, sun) with each other
+      across(c(total_ons, total_offs, num_svc_days), sum), 
+      .groups='drop') %>%
+    mutate(
+      avg_boardings = total_ons/num_svc_days,
+      avg_alightings = total_offs/num_svc_days,
+      .keep='unused'
+      )
+  
+  riders_day_type %>%
+    group_by(season, daytype, route_id, parent_station) %>%
+    summarise( # sum up the two weekend day types with each other
+      across(c(total_ons, total_offs, num_svc_days), sum), 
+      .groups='drop') %>%
+    mutate(
+      avg_boardings = total_ons/num_svc_days,
+      avg_alightings = total_offs/num_svc_days,
+      .keep='unused'
+      ) %>%
+    pivot_wider(
+      id_cols = c("season", "route_id", "parent_station"),
+      names_from = 'daytype', values_from = c('avg_boardings', 'avg_alightings')
+    ) %>%
+    inner_join(riders_fullweek, by=c("season", "route_id", "parent_station"))
+}
+
+f23_clean <- ridership_f23 %>% clean_ridership()
+f19_clean <- ridership_f17_to_f19 %>%
+  filter(season=='Fall 2019') %>%
+  mutate(parent_station = stop_id) %>% 
+  clean_ridership()
+
+f19_clean %>% write.csv('data/cleaned/stations_routes_f19_ridership.csv', row.names=F)
+f23_clean %>% write.csv('data/cleaned/stations_routes_f23_ridership.csv', row.names=F)
 ```
 
 The unique identifier per ridership row is the combination of route_id and parent_station (meaning, for example, that State Street has separate rows for the Orange Line and the Blue Line). This informs how we process the various independent variables.
