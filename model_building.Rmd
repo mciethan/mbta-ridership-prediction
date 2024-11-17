@@ -118,19 +118,19 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 # specified through a list of named parameters "data" and "y"
 
 base_reg <- function(params) {
-  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_tt + 
+  eval(bquote(lm(.(as.symbol(params$y)) ~ #avg_tt + 
        avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre 
+     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
      , data=params$data
      )))
 }
 
 enhanced_reg <- function(params) { 
-  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_tt + 
+  eval(bquote(lm(.(as.symbol(params$y)) ~ #avg_tt + 
        avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre #+ jobs_per_acre 
+     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
      + college_students_1000s
      , data=params$data
      )))
