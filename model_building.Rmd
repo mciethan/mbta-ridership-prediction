@@ -36,13 +36,14 @@ get_model_data <- function(season) {
     left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
     mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
     mutate(
-      #devl_mix = tot_jobs/(tot_pop + tot_jobs), 
+      devl_mix = tot_jobs/(tot_pop + tot_jobs), 
       jobs_per_acre = mean_jobs_sqft*43560,
       pop_per_acre = ppsqft*43560, 
       college_students_1000s = college_students/1000,
       connecting_bus_riders_100s = connecting_bus_riders/100,
       median_inc_1000s = avg_median_inc/1000, 
       pnr_spaces_100s = pnr_spaces/100,
+      avg_trav_time_to_cbd = avg_tt,
       .keep='unused'
       ) %>%
     mutate(route=1, route_id_temp = route_id) %>% # this creates dummy variables for each route
@@ -56,9 +57,11 @@ model_data_f19 <- get_model_data('f19')
 ## Descriptive Statistics
 
 ```{r}
-continuous_vars <- c('avg_boardings', 'avg_headway', 'avg_tt', 'walk_score', 'km_from_cbd', 
-                     'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 'devl_mix')
-sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes', 'pnr_spaces_100s', 'college_students_1000s')
+continuous_vars <- c('avg_boardings', 'avg_headway', 'avg_trav_time_to_cbd', 
+                     'walk_score', 'km_from_cbd', 'median_inc_1000s', 'pop_per_acre',
+                     'jobs_per_acre', 'devl_mix')
+sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes',
+                 'pnr_spaces_100s', 'college_students_1000s')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'in_bos')
 
 
@@ -111,6 +114,11 @@ Pairs plot
 model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 ```
 
+Correlation matrix
+```{r}
+model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
+```
+
 ## Model Building
 
 ```{r}
@@ -118,7 +126,7 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 # specified through a list of named parameters "data" and "y"
 
 base_reg <- function(params) {
-  eval(bquote(lm(.(as.symbol(params$y)) ~ #avg_tt + 
+  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_trav_time_to_cbd + 
        avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
      + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
@@ -127,7 +135,7 @@ base_reg <- function(params) {
 }
 
 enhanced_reg <- function(params) { 
-  eval(bquote(lm(.(as.symbol(params$y)) ~ #avg_tt + 
+  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_trav_time_to_cbd + 
        avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
      + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
      + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
@@ -159,7 +167,7 @@ coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
 adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 
-summaries[['Fall 2023 weekend enhanced']] # display summary for a single specification
+summaries[['Fall 2023 weekday base']] # display summary for a single specification
 ```
 
 Calculate the variance inflation factor per variable (to test for multicollinearity) across all models
