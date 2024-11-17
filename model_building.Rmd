@@ -26,6 +26,7 @@ get_model_data <- function(season) {
     inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'headways', sep='_')), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset(paste(season, 'spacings', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
@@ -33,9 +34,11 @@ get_model_data <- function(season) {
     inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=c('route_id', 'parent_station')) %>%  
+    left_join(get_dataset(paste(season, 'terminals', sep='_')), by=c('route_id', 'parent_station')) %>%
     left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
-    mutate(transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0)) %>%
     mutate(
+      transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
+      terminal = case_when(terminal == 1 ~ 1, .default=0),
       devl_mix = tot_jobs/(tot_pop + tot_jobs), 
       jobs_per_acre = mean_jobs_sqft*43560,
       pop_per_acre = ppsqft*43560, 
@@ -57,12 +60,12 @@ model_data_f19 <- get_model_data('f19')
 ## Descriptive Statistics
 
 ```{r}
-continuous_vars <- c('avg_boardings', 'avg_headway', 'avg_trav_time_to_cbd', 
-                     'walk_score', 'km_from_cbd', 'median_inc_1000s', 'pop_per_acre',
+continuous_vars <- c('avg_boardings', 'avg_headway_wkdy', 'avg_headway_wknd', 'avg_trav_time_to_cbd', 
+                     'avg_spacing_km', 'walk_score', 'km_from_cbd', 'median_inc_1000s', 'pop_per_acre',
                      'jobs_per_acre', 'devl_mix')
 sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes',
                  'pnr_spaces_100s', 'college_students_1000s')
-dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'in_bos')
+dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal', 'in_bos')
 
 
 numeric_data <- model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars)))
@@ -126,33 +129,37 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
 # specified through a list of named parameters "data" and "y"
 
 base_reg <- function(params) {
-  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_trav_time_to_cbd + 
-       avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
-     + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
-     , data=params$data
+  eval(bquote(
+    lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
+       .(as.symbol(paste0('avg_headway_', params$daytype))) #+ avg_spacing_km
+       + Red + Orange + Blue + transfer #+ terminal #+ km_from_cbd
+       + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
+       + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
+       , data=params$data
      )))
 }
 
 enhanced_reg <- function(params) { 
-  eval(bquote(lm(.(as.symbol(params$y)) ~ avg_trav_time_to_cbd + 
-       avg_headway + Red + Orange + Blue + transfer #+ km_from_cbd
-     + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-     + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
-     + college_students_1000s
+  eval(bquote(
+    lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
+       .(as.symbol(paste0('avg_headway_', params$daytype))) #+ avg_spacing_km
+       + Red + Orange + Blue + transfer #+ terminal #+ km_from_cbd
+       + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
+       + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
+       + college_students_1000s
      , data=params$data
      )))
 }
 
 specifications <- list(
-  "Fall 2019 weekday" = list(data=model_data_f19, y='avg_boardings_wkdy'), 
-  "Fall 2023 weekday" = list(data=model_data_f23, y='avg_boardings_wkdy'),
-  "Fall 2019 weekday (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), y='avg_boardings_wkdy'),
-  "Fall 2023 weekday (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), y='avg_boardings_wkdy'),
-  "Fall 2019 weekend" = list(data=model_data_f19, y='avg_boardings_wknd'), 
-  "Fall 2023 weekend" = list(data=model_data_f23, y='avg_boardings_wknd'),
-  "Fall 2019 weekend (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), y='avg_boardings_wknd'),
-  "Fall 2023 weekend (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), y='avg_boardings_wknd')
+  "Fall 2019 weekday" = list(data=model_data_f19, daytype='wkdy'), 
+  "Fall 2023 weekday" = list(data=model_data_f23, daytype='wkdy'),
+  "Fall 2019 weekday (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), daytype='wkdy'),
+  "Fall 2023 weekday (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), daytype='wkdy'),
+  "Fall 2019 weekend" = list(data=model_data_f19, daytype='wknd'), 
+  "Fall 2023 weekend" = list(data=model_data_f23, daytype='wknd'),
+  "Fall 2019 weekend (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), daytype='wknd'),
+  "Fall 2023 weekend (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), daytype='wknd')
 )
 
 base_regressions <- specifications %>% lapply(base_reg) %>%

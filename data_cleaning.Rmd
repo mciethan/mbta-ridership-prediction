@@ -114,7 +114,11 @@ rt_stations_per_route <- function(gtfs) {
     inner_join(gtfs$stop_times, by='trip_id') %>%
     inner_join(gtfs$stops, by='stop_id') %>%
     # reduce the Green Line's branches into a single Green route_id, consistent with ridership
-    mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
+    mutate(
+      route_id = case_when(
+        str_detect(route_id, 'Green') ~ 'Green', 
+        .default=route_id)
+      ) %>%
     select(route_id, route_long_name, parent_station) %>%
     # this second join to the stops table is so that we use the parent station IDs and their more
     # generalized coordinates instead of the more specific coordinates of each platform
@@ -134,28 +138,69 @@ rt_stations_f23 %>% write.csv('data/cleaned/stations_routes_f23.csv', row.names=
 rt_stations_f19 %>% write.csv('data/cleaned/stations_routes_f19.csv', row.names=FALSE)
 ```
 
-## Calculate the average inbound weekday headway in seconds per route per station 
+## Headways and Terminal Stops
+
+Helper function used for both calculations to identify typical Rapid Transit service
+```{r}
+typical_rt_service <- function(gtfs) {
+  gtfs$stop_times %>% 
+    inner_join(gtfs$trips, by='trip_id') %>%
+    inner_join(gtfs$routes, by='route_id') %>%
+    filter(route_desc == 'Rapid Transit') %>%
+    inner_join(gtfs$calendar_attributes, by='service_id') %>%
+    filter(service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
+    mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors for next join
+    inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
+    filter(route_pattern_typicality == 1) 
+}
+```
+
+### Terminals
+
+```{r}
+calc_terminals <- function(gtfs) {
+  gtfs %>% 
+    typical_rt_service() %>%
+    group_by(route_id, route_pattern_id, direction_id) %>% 
+    slice(which.min(stop_sequence)) %>%
+    ungroup() %>%
+    inner_join(gtfs$stops, by='stop_id') %>%
+    mutate(
+      route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)
+      ) %>%
+    select(route_id, parent_station) %>%
+    unique() %>%
+    mutate(terminal=1)
+}
+
+f23_terminals <- f23_gtfs %>% calc_terminals()
+f19_terminals <- f19_gtfs %>% calc_terminals()
+
+f23_terminals
+```
+
+```{r}
+f23_terminals %>% write.csv('data/cleaned/stations_routes_f23_terminals.csv', row.names=FALSE)
+f19_terminals %>%   write.csv('data/cleaned/stations_routes_f19_terminals.csv', row.names=FALSE)
+```
+
+### Headways (average inbound, in seconds) per station, route, daytype
 
 ```{r}
 library(hms)
 
 headways_per_station_route <- function(gtfs) { 
-  gtfs$stop_times %>%
-    filter(departure_time > parse_hms('06:00:00'), departure_time < parse_hms('22:00:00'))  %>%
-    inner_join(gtfs$trips, by='trip_id') %>%
-    filter(direction_id == '1') %>% # only consider a single direction (inbound, in this case)
-    inner_join(gtfs$routes, by='route_id') %>%
-    filter(route_desc == 'Rapid Transit') %>%
-    inner_join(gtfs$calendar_attributes, by='service_id') %>%
-    filter(
-      service_schedule_type == 'Weekday', # only consider weekday service
-      service_schedule_typicality == 1) %>% # filter out atypical (e.g. special event) services
-    mutate(direction_id = as.character(direction_id)) %>% # data type fix to avoid errors on the next join
-    inner_join(gtfs$route_patterns, by=c('route_pattern_id', 'route_id', 'direction_id')) %>%
-    filter(route_pattern_typicality == 1) %>% # filter out atypical (e.g. early morning) route variants
+  gtfs %>% 
+    typical_service() %>%
+    filter( # only consider core service hours and a single direction (inbound, in this case)
+      departure_time > parse_hms('06:00:00'), 
+      departure_time < parse_hms('22:00:00'),
+      direction_id == '1') %>%
     inner_join(gtfs$stops, by='stop_id') %>%
-    mutate(route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)) %>%
-    group_by(route_id, parent_station) %>%
+    mutate(
+      route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)
+      ) %>%
+    group_by(route_id, parent_station, service_schedule_type) %>%
     # avg headway = total time elapsed divided by total number of departures during the period
     summarise(avg_headway = round(16*3600/n()), service_count = n_distinct(service_id), .groups='drop') 
 }
@@ -168,30 +213,147 @@ f19_headways <- f19_gtfs %>% headways_per_station_route()
 # this diagnostic checks that all the headways were calculated with a single service ID
 # if there are values other than 1 in this output, the headways may need recalculation
 f23_headways %>%
-  select(service_count) %>%
+  select(service_schedule_type, service_count) %>%
   unique()
 
 f19_headways %>%
-  select(service_count) %>%
+  select(service_schedule_type, service_count) %>%
   unique()
 ```
 
+Pivot the headways per daytype into their own columns and combine Sat & Sun into a general weekend
 ```{r}
-f23_headways %>% select(-service_count) %>% 
+pivot_daytypes <- function(headways) {
+  headways %>%
+    mutate(
+      daytype = case_when(service_schedule_type == 'Weekday' ~ 'wkdy', .default='wknd')
+      ) %>%
+    group_by(route_id, parent_station, daytype) %>%
+    summarise(avg_headway = mean(avg_headway), .groups='drop') %>%
+    pivot_wider(
+      id_cols = c('route_id', 'parent_station'), 
+      names_from='daytype', 
+      names_prefix = 'avg_headway_', 
+      values_from='avg_headway'
+      )
+}
+
+f23_headways %>% pivot_daytypes()
+```
+
+```{r}
+f23_headways %>% pivot_daytypes() %>% 
   write.csv('data/cleaned/stations_routes_f23_headways.csv', row.names=FALSE)
-f19_headways %>% select(-service_count) %>% 
+f19_headways %>% pivot_daytypes() %>% 
   write.csv('data/cleaned/stations_routes_f19_headways.csv', row.names=FALSE)
 ```
 
-## Calculate the number of bus / CR routes and riders that connect to each station
+## Interstation spacing
 
 ```{r}
 rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
 rt_stations_f19 <- read.csv('data/cleaned/stations_routes_f19.csv')
 ```
 
-### Bus ridership pre-processing
+This may take several minutes to run because the geographic functions take a little while to run row-wise. There probably is a way to refactor this and speed it up if that becomes a priority
+```{r}
+calculate_spacing <- function(gtfs, rt_stations_df) {
+  ordered_stops <- gtfs %>%
+    typical_rt_service() %>%
+    inner_join(gtfs$stops, by='stop_id') %>%
+    select(direction_id, route_id, route_pattern_id, parent_station, stop_sequence) %>%
+    unique() %>%
+    filter(direction_id == 1) %>%
+    group_by(route_id, route_pattern_id) %>%
+    mutate(rank = with_order(order_by = stop_sequence,
+                             fun      = row_number, 
+                             x        = desc(stop_sequence)
+                             ),
+           rank_next = rank + 1,
+           rank_prev = rank - 1
+           ) %>%
+    select(-c(direction_id, stop_sequence)) %>%
+    ungroup() %>%
+    mutate(
+      route_id = case_when(str_detect(route_id, 'Green') ~ 'Green', .default=route_id)
+      )
+  
+  ordered_stops %>%
+    left_join(ordered_stops, suffix=c('', '_next'), by=join_by(
+      route_id == route_id, route_pattern_id == route_pattern_id, rank == rank_next
+      )) %>%
+    left_join(ordered_stops, suffix=c('', '_prev'), by=join_by(
+      route_id == route_id, route_pattern_id == route_pattern_id, rank == rank_prev
+      )) %>%
+    select(route_id, parent_station, parent_station_prev, parent_station_next) %>%
+    left_join(
+      rt_stations_df %>% select(-stop_name), 
+      by=join_by(route_id == route_id, parent_station == parent_station)
+      ) %>%
+    left_join(
+      rt_stations_df %>% select(-stop_name), suffix = c('', '_prev'),
+      by=join_by(route_id == route_id, parent_station_prev == parent_station)
+      ) %>%
+    left_join(
+      rt_stations_df %>% select(-stop_name), suffix = c('', '_next'),
+      by=join_by(route_id == route_id, parent_station_next == parent_station)
+      ) %>%
+    rowwise() %>%
+    mutate(
+      dist_prev_km = st_distance(
+        st_point(c(stop_lon, stop_lat)) %>% 
+          st_geometry() %>% st_set_crs(4326) %>% st_transform(26986), 
+        st_point(c(stop_lon_prev, stop_lat_prev)) %>% 
+          st_geometry() %>% st_set_crs(4326) %>% st_transform(26986)
+        ) %>% as.numeric() / 1000,
+      dist_next_km = st_distance(
+        st_point(c(stop_lon, stop_lat)) %>% 
+          st_geometry() %>% st_set_crs(4326) %>% st_transform(26986), 
+        st_point(c(stop_lon_next, stop_lat_next)) %>% 
+          st_geometry() %>% st_set_crs(4326) %>% st_transform(26986)
+        ) %>% as.numeric() / 1000,
+      avg_spacing_km = mean(c(dist_prev_km, dist_next_km), na.rm=T)
+    ) %>%
+    group_by(route_id, parent_station) %>%
+    # this final step takes the average spacing across branches (e.g. for JFK)
+    summarise(avg_spacing_km = mean(avg_spacing_km), .groups='drop')
+}
 
+f23_spacings <- f23_gtfs %>% calculate_spacing(rt_stations_f23)
+f19_spacings <- f19_gtfs %>% calculate_spacing(rt_stations_f19)
+```
+
+```{r}
+f23_spacings %>% write.csv('data/cleaned/stations_routes_f23_spacings.csv', row.names=FALSE)
+f19_spacings %>% write.csv('data/cleaned/stations_routes_f19_spacings.csv', row.names=FALSE)
+```
+
+## Bus / CR routes and riders that connect to each station
+
+```{r}
+rt_stations_f23 <- read.csv('data/cleaned/stations_routes_f23.csv')
+rt_stations_f19 <- read.csv('data/cleaned/stations_routes_f19.csv')
+```
+
+Helper function for both calculations to get a list of station-routes served by a given mode
+```{r}
+stations_per_mode <- function(gtfs, mode) {
+  gtfs$stops %>% 
+    inner_join(gtfs$stop_times, by='stop_id') %>%
+    inner_join(gtfs$trips, by='trip_id') %>%
+    inner_join(gtfs$routes, by='route_id') %>%
+    # the idea to filter by listed_route != 1 comes from the MBTA GTFS documentation:
+    # https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs.md#routestxt
+    # in practice, it filters out a handful of variants that aren't really their own routes
+    filter(str_detect(route_desc, mode), listed_route != '1') %>%
+    select(parent_station, route_id) %>%
+    unique()
+}
+```
+
+### Bus 
+
+ridership pre-processing
 ```{r}
 bus_ridership_f23 <- read.csv('data/mbta/bus_ridership_stops_F23.csv')
 bus_ridership_f19 <- read.csv('data/mbta/bus_ridership_stops_F19.csv')
@@ -212,16 +374,8 @@ bus_rdrs_f19 <- bus_ridership_f19 %>% clean_bus_ridership()
 ```{r}
 calc_bus_metrics <- function(gtfs, bus_ridership) {
   # the goal here is to count the number of bus routes and riders connecting to each parent_station
-  gtfs$stops %>% 
-    inner_join(gtfs$stop_times, by='stop_id') %>%
-    inner_join(gtfs$trips, by='trip_id') %>%
-    inner_join(gtfs$routes, by='route_id') %>%
-    # the idea to filter by listed_route != 1 comes from the MBTA GTFS documentation:
-    # https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs.md#routestxt
-    # in practice, it filters out a handful of variants that aren't really their own routes
-    filter(str_detect(route_desc, 'Bus'), listed_route != '1') %>%
-    select(parent_station, route_id) %>%
-    unique() %>%
+  gtfs %>% 
+    stations_per_mode('Bus') %>%
     # left join because not all bus route IDs have ridership in this dataset
     # I did check and it was just a handful of variants / special service type routes
     left_join(bus_ridership, by='route_id') %>%
@@ -233,18 +387,12 @@ f23_buses <- f23_gtfs %>% calc_bus_metrics(bus_rdrs_f23)
 f19_buses <- f19_gtfs %>% calc_bus_metrics(bus_rdrs_f19)
 ```
 
+### Commuter Rail
+
 ```{r}
 calc_cr_metrics <- function(gtfs) {
-  gtfs$stops %>% 
-    inner_join(gtfs$stop_times, by='stop_id') %>%
-    inner_join(gtfs$trips, by='trip_id') %>%
-    inner_join(gtfs$routes, by='route_id') %>%
-    # the idea to filter by listed_route != 1 comes from the MBTA GTFS documentation:
-    # https://github.com/mbta/gtfs-documentation/blob/master/reference/gtfs.md#routestxt
-    # in practice, it filters out a handful of variants that aren't really their own routes
-    filter(route_desc == 'Commuter Rail', listed_route != '1') %>%
-    select(parent_station, route_id) %>%
-    unique() %>%
+  gtfs %>% 
+    stations_per_mode('Commuter Rail') %>%
     group_by(parent_station) %>%
     summarise(cr_rte_count = n(), .groups='drop')
 }

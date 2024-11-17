@@ -1,0 +1,17 @@
+"route_id","parent_station","terminal"
+"Blue","place-wondl",1
+"Blue","place-bomnl",1
+"Green","place-gover",1
+"Green","place-lake",1
+"Green","place-clmnl",1
+"Green","place-unsqu",1
+"Green","place-river",1
+"Green","place-mdftf",1
+"Green","place-hsmnl",1
+"Mattapan","place-asmnl",1
+"Mattapan","place-matt",1
+"Orange","place-ogmnl",1
+"Orange","place-forhl",1
+"Red","place-alfcl",1
+"Red","place-asmnl",1
+"Red","place-brntn",1
