@@ -31,6 +31,7 @@ get_model_data <- function(season) {
     inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
+    inner_join(get_dataset('acs2022_5yr_vehicles_available'), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
     inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=c('route_id', 'parent_station')) %>%  
@@ -40,6 +41,9 @@ get_model_data <- function(season) {
       transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
       terminal = case_when(terminal == 1 ~ 1, .default=0),
       devl_mix = tot_jobs/(tot_pop + tot_jobs), 
+      hh_no_vehicle_share = total_HH_no_vehicle / total_HH,
+      avg_veh_per_hh = (total_HH_one_vehicle + 2*total_HH_two_vehicle + 
+                          3*total_HH_three_vehicle + 4*total_HH_four_vehicle) / total_HH,
       jobs_per_acre = mean_jobs_sqft*43560,
       pop_per_acre = ppsqft*43560, 
       college_students_1000s = college_students/1000,
@@ -62,7 +66,7 @@ model_data_f19 <- get_model_data('f19')
 ```{r}
 continuous_vars <- c('avg_boardings', 'avg_headway_wkdy', 'avg_headway_wknd', 'avg_trav_time_to_cbd', 
                      'avg_spacing_km', 'walk_score', 'km_from_cbd', 'median_inc_1000s', 'pop_per_acre',
-                     'jobs_per_acre', 'devl_mix')
+                     'jobs_per_acre', 'devl_mix', 'hh_no_vehicle_share', 'avg_veh_per_hh')
 sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes',
                  'pnr_spaces_100s', 'college_students_1000s')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal', 'in_bos')
@@ -131,23 +135,25 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
 base_reg <- function(params) {
   eval(bquote(
     lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
-       .(as.symbol(paste0('avg_headway_', params$daytype))) #+ avg_spacing_km
-       + Red + Orange + Blue + transfer #+ terminal #+ km_from_cbd
+       avg_headway + avg_spacing_km
+       + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
        + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-       + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
-       , data=params$data
+       + walk_score + median_inc_1000s + avg_veh_per_hh + pop_per_acre + jobs_per_acre 
+       , data=params$data %>% 
+         rename(avg_headway = .(as.symbol(paste0('avg_headway_', params$daytype))))
      )))
 }
 
 enhanced_reg <- function(params) { 
   eval(bquote(
     lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
-       .(as.symbol(paste0('avg_headway_', params$daytype))) #+ avg_spacing_km
-       + Red + Orange + Blue + transfer #+ terminal #+ km_from_cbd
+       avg_headway + avg_spacing_km
+       + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
        + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-       + walk_score + median_inc_1000s + pop_per_acre + jobs_per_acre 
+       + walk_score + median_inc_1000s + avg_veh_per_hh + pop_per_acre + jobs_per_acre 
        + college_students_1000s
-     , data=params$data
+     , data=params$data %>% 
+         rename(avg_headway = .(as.symbol(paste0('avg_headway_', params$daytype))))
      )))
 }
 
@@ -177,40 +183,56 @@ f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 summaries[['Fall 2023 weekday base']] # display summary for a single specification
 ```
 
-Calculate the variance inflation factor per variable (to test for multicollinearity) across all models
-```{r}
-regressions %>% lapply(vif)
-```
-
 Create a formatted table for easier comparison across specifications
 ```{r}
 rc <- function(n, digits) round(n, digits) %>% as.character()
 
-format_results <- function(result) {
-  result['Estimate'] %>%
+format_results <- function(result, vif) {
+  out_str <- result['Estimate'] %>%
     rc(2) %>%
-    paste(paste0('(se=', result['Std. Error'] %>% rc(2), ', t=', result['t value'] %>% rc(2), ')'))
+    paste(paste0(
+      '(se=', result['Std. Error'] %>% rc(2)))
+  
+  if (!is.na(vif)) {
+      out_str <- out_str %>% paste0(', vif=', vif %>% rc(2))
+  }
+  
+  out_str <- out_str %>% paste0(', t=', result['t value'] %>% rc(2), ')')
+  out_str
 }
 
 compare_specifications <- function(var) {
-  coefficients %>% 
-    lapply(function(df) {
-      if (var %in% row.names(df)) format_results(df[var,]) 
+  names(coefficients) %>% 
+    lapply(function(spec) {
+      if (var %in% row.names(coefficients[[spec]])) {
+        vif <- NA
+        if (var %in% names(vif(regressions[[spec]]))) {
+          vif <- vif(regressions[[spec]])[[var]]
+        }
+        format_results(coefficients[[spec]][var,], vif)
+      }
       else '--'
     }) %>% 
+    `names<-`(names(coefficients)) %>% 
     as.data.frame()
 }
 
-var_names <- coefficients[[length(coefficients)]] %>% row.names() # get variable names from the last model
+var_names <- coefficients[[length(coefficients)]] %>% row.names() # get variable names from last model
 
 formatted_output <- var_names %>%
   lapply(compare_specifications) %>%
   bind_rows() %>%
   `row.names<-`(var_names) %>%
   bind_rows(
-    adj_r2s %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`('Adjusted R Squared'),
-    f_stats %>% lapply(function(ar2) rc(ar2, 3)) %>% as.data.frame() %>% `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
-  )
+    adj_r2s %>% 
+      lapply(function(ar2) rc(ar2, 3)) %>% 
+      as.data.frame() %>% 
+      `row.names<-`('Adjusted R Squared'),
+    f_stats %>% 
+      lapply(function(ar2) rc(ar2, 3)) %>% 
+      as.data.frame() %>% 
+      `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
+    )
 
 formatted_output
 ```
