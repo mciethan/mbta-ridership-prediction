@@ -183,6 +183,7 @@ summaries <- regressions %>% lapply(summary)
 coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
 adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
+rmses <- regressions %>% lapply(function(reg) sqrt(mean(reg$residuals^2)))
 
 summaries[['Fall 2023 weekday base']] # display summary for a single specification
 ```
@@ -235,7 +236,11 @@ formatted_output <- var_names %>%
     f_stats %>% 
       lapply(function(ar2) rc(ar2, 3)) %>% 
       as.data.frame() %>% 
-      `row.names<-`(c('F Statistic', 'df_vars', 'df_obs'))
+      `row.names<-`(c('F Statistic', 'df_vars', 'df_obs')),
+    rmses %>% 
+      lapply(function(ar2) rc(ar2, 3)) %>% 
+      as.data.frame() %>% 
+      `row.names<-`('RMSE')
     )
 
 formatted_output
