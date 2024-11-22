@@ -826,10 +826,10 @@ ma_colleges_19 <- ma_college_data(hd_19, enrollment_19)
 
 ```{r}
 join_college_data <- function(rt_station_geoms, ma_college_df) {
-  rt_station_geoms_f23 %>%
+  rt_station_geoms %>%
     st_as_sf(crs=4326, wkt = "walk_poly_wkt") %>%
     st_transform(crs=26986) %>%
-    st_join(ma_colleges_23, join=st_intersects, left=TRUE) %>%
+    st_join(ma_college_df, join=st_intersects, left=TRUE) %>%
     
     # splits point enrollments evenly across intersecting station areas
     group_by(UNITID) %>%
@@ -848,5 +848,58 @@ rt_station_geoms_f23 %>%
 rt_station_geoms_f19 %>% 
   join_college_data(ma_colleges_19) %>%
   write.csv('data/cleaned/stations_routes_f19_colleges.csv', row.names=FALSE)
+```
+
+# Hotels & Restaurants
+
+```{r}
+# station-area geometries to which we will join the hotel coordinates
+rt_station_geoms_f23 <- read.csv('data/cleaned/stations_routes_f23_geoms_nonoverlapping.csv')
+rt_station_geoms_f19 <- read.csv('data/cleaned/stations_routes_f19_geoms_nonoverlapping.csv')
+```
+
+Hotels source: https://data.boston.gov/dataset/licensing-board-licenses/resource/04584beb-8160-4235-af57-bb8337efd512
+```{r}
+library(httr2) # to make the API request from data.boston.gov
+
+bos_licenses_url <- 'https://data.boston.gov/api/3/action/datastore_search?resource_id=04584beb-8160-4235-af57-bb8337efd512&limit=5000'
+
+api_raw <- req_perform(request(bos_licenses_url))
+```
+
+```{r}
+body <- api_raw %>%
+  resp_body_string() %>%
+  jsonlite::fromJSON()
+
+licenses <- body$result$records
+```
+
+```{r}
+hotel_df <- licenses %>%
+  filter(license_category == 'Inn', !is.na(gpsx)) %>%
+  group_by(business_name, gpsx, gpsy) %>% 
+  unique() %>% # deduplicate where multiple licenses exist for 1 business
+  st_as_sf(coords = c("gpsx","gpsy"), crs=2249)
+
+join_hotel_data <- function(rt_station_geoms) {
+  rt_station_geoms %>%
+    st_as_sf(crs=4326, wkt = "walk_poly_wkt") %>%
+    st_transform(crs=2249) %>% # MA state plane system used by the license data
+    st_join(hotel_df, join=st_intersects, left=TRUE) %>%
+    group_by(route_id, parent_station) %>% # count hotels per station area
+    summarise(hotels = sum(case_when(
+        is.na(business_name) ~ 0, .default=1
+      )), .groups='drop') %>%
+    st_drop_geometry()
+}
+
+rt_station_geoms_f23 %>%
+  join_hotel_data() %>%
+  write.csv('data/cleaned/stations_routes_f23_hotels.csv', row.names=FALSE)
+    
+rt_station_geoms_f19 %>%
+  join_hotel_data() %>%
+  write.csv('data/cleaned/stations_routes_f19_hotels.csv', row.names=FALSE)
 ```
 
