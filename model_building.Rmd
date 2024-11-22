@@ -19,25 +19,27 @@ get_dataset <- function(dataset) {
   read.csv(paste0('data/cleaned/stations_routes_', dataset, '.csv'))
 }
 
+id_cols <- c('route_id', 'parent_station') # most of our data are at the route_station level
 xfer_station_names <- c('Park Street', 'Downtown Crossing', 'Government Center', 'State')
 
 get_model_data <- function(season) {
   get_dataset(season) %>%
-    inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'headways', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'spacings', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset('acs2022_5yr_vehicles_available'), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset('acs2022_5yr_pop'), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset('2021_wac_agg'), by=c('route_id', 'parent_station')) %>%
-    inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=c('route_id', 'parent_station')) %>%  
-    left_join(get_dataset(paste(season, 'terminals', sep='_')), by=c('route_id', 'parent_station')) %>%
-    left_join(get_dataset(paste(season, 'ridership', sep='_')), by=c('route_id', 'parent_station')) %>%
-    mutate( # this first mutate is for any where we want to keep the variables that are used
+    inner_join(get_dataset(paste(season, 'geog_vars', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'bus&CR_connections', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'headways', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'spacings', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'travel_times_to_cbd', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'pnr_spaces', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'walk_scores', sep='_')), by=id_cols) %>%
+    inner_join(get_dataset('acs2022_5yr_avgMedianIncome'), by=id_cols) %>%
+    inner_join(get_dataset('acs2022_5yr_vehicles_available'), by=id_cols) %>%
+    inner_join(get_dataset('acs2022_5yr_pop'), by=id_cols) %>%
+    inner_join(get_dataset('2021_wac_agg'), by=id_cols) %>%
+    inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=id_cols) %>%  
+    inner_join(get_dataset(paste(season, 'hotels', sep='_')), by=id_cols) %>% 
+    left_join(get_dataset(paste(season, 'terminals', sep='_')), by=id_cols) %>%
+    left_join(get_dataset(paste(season, 'ridership', sep='_')), by=id_cols) %>%
+    mutate( # this first mutate is for any operations where we want to keep the variables that are used
       transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
       cov_tt = sd_tt/avg_tt # coefficient of variation of travel time to CBD
     ) %>%
@@ -155,7 +157,7 @@ enhanced_reg <- function(params) {
        + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
        + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
        + walk_score + median_inc_1000s + avg_veh_per_hh + pop_per_acre + jobs_per_acre 
-       + college_students_1000s
+       + college_students_1000s + hotels
      , data=params$data %>% 
          rename(avg_headway = .(as.symbol(paste0('avg_headway_', params$daytype))))
      )))
@@ -185,7 +187,7 @@ adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 rmses <- regressions %>% lapply(function(reg) sqrt(mean(reg$residuals^2)))
 
-summaries[['Fall 2023 weekday base']] # display summary for a single specification
+summaries[['Fall 2023 weekday enhanced']] # display summary for a single specification
 ```
 
 Create a formatted table for easier comparison across specifications
@@ -255,19 +257,27 @@ formatted_output %>% write.csv('formatted_output.csv', row.names = TRUE)
 Predicted vs Actual plots
 
 ```{r}
-plot_y_yhat_w_labels <- function(df, yhat, xy_prefix, add_labels=FALSE) {
-  plot(x=df$avg_boardings, y=yhat, pch=16,
-       xlab=paste(xy_prefix, 'Actual Boardings'),
-       ylab=paste(xy_prefix, 'Predicted Boardings'),
-       main=paste(xy_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
+plot_y_yhat_w_labels <- function(df, reg, add_labels=FALSE, transformation=I, transform_prefix='') {
+  yname <- names(reg$model)[[1]]
+  y_actual <- df[[yname]] %>% transformation()
+  yhat <- predict(reg) %>% transformation()
+  resid <- reg$residuals
+  
+  plot(x=y_actual, y=yhat, pch=16, col=df$route_id, # use route IDs as point colors
+       xlab=paste(transform_prefix, 'Actual Boardings'),
+       ylab=paste(transform_prefix, 'Predicted Boardings'),
+       main=paste(transform_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
   abline(a=0, b=1) # draw 1=1 line for reference
   
   # option to add station labels to help identify the kinds of places we're over- or under-predicting
   if (add_labels) {
-    text(x=df$avg_boardings, y=yhat, adj=c(0.5,1), cex=0.5,
+    df_large_resid <- df[abs(resid) > 2500,]
+    y_large_resid <- df_large_resid[[yname]] %>% transformation()
+    yhat_large_resid <- yhat[abs(resid) > 2500] #%>% transformation()
+    text(x=y_large_resid, y=yhat_large_resid, adj=c(0.5,1), cex=0.5,
        labels=paste0(
-         str_sub(df$route_id, end=1),
-         '-', str_sub(df$stop_name, end=3))
+         str_sub(df_large_resid$route_id, end=1),
+         '-', str_sub(df_large_resid$stop_name, end=3))
        )
   }
 }
@@ -275,20 +285,22 @@ plot_y_yhat_w_labels <- function(df, yhat, xy_prefix, add_labels=FALSE) {
 
 ```{r}
 specifications[['Fall 2023 weekday']]$data %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekday base']]), '')
+  plot_y_yhat_w_labels(regressions[['Fall 2023 weekday enhanced']], add_labels=T)
 
 specifications[['Fall 2023 weekday']]$data %>%
-  mutate(avg_boardings = log(avg_boardings)) %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekday base']]) %>% log(), 'Logged')
+  plot_y_yhat_w_labels(
+    regressions[['Fall 2023 weekday enhanced']], #add_labels=T, 
+    transformation=log, transform_prefix='Logged ')
 ```
 
 ```{r}
 specifications[['Fall 2023 weekend']]$data %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekend base']]), '', add_labels=TRUE)
+  plot_y_yhat_w_labels(regressions[['Fall 2023 weekend base']], add_labels=TRUE)
 
 specifications[['Fall 2023 weekend']]$data %>%
-  mutate(avg_boardings = log(avg_boardings)) %>%
-  plot_y_yhat_w_labels(predict(regressions[['Fall 2023 weekend base']]) %>% log(), 'Logged', add_labels=TRUE)
+  plot_y_yhat_w_labels(
+    regressions[['Fall 2023 weekend base']], #add_labels=T, 
+    transformation=log, transform_prefix='Logged ')
 ```
 
 # TODO: actual vs predicted total ridership
