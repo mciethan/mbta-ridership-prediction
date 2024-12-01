@@ -6,8 +6,12 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse) # for pipe notation and tabular functions
+library(sf) # for geographic operations
 library(car) # for the vif function to test multicollinearity
-library(tidyverse)
+library(leaflet) # for mapping
+library(leaflegend) # for extra map legend functions
+library(ape) # for spatial autocorrelation (Moran's I) function
 ```
 
 This script will be where we build & validate our models of ridership.
@@ -35,8 +39,10 @@ get_model_data <- function(season) {
     inner_join(get_dataset('acs2022_5yr_vehicles_available'), by=id_cols) %>%
     inner_join(get_dataset('acs2022_5yr_pop'), by=id_cols) %>%
     inner_join(get_dataset('2021_wac_agg'), by=id_cols) %>%
+    inner_join(get_dataset('2024_lu_entropy'), by=id_cols) %>%
     inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=id_cols) %>%  
     inner_join(get_dataset(paste(season, 'hotels', sep='_')), by=id_cols) %>% 
+    inner_join(get_dataset(paste(season, 'hospitals', sep='_')), by=id_cols) %>% 
     left_join(get_dataset(paste(season, 'terminals', sep='_')), by=id_cols) %>%
     left_join(get_dataset(paste(season, 'ridership', sep='_')), by=id_cols) %>%
     mutate( # this first mutate is for any operations where we want to keep the variables that are used
@@ -55,6 +61,7 @@ get_model_data <- function(season) {
       connecting_bus_riders_100s = connecting_bus_riders/100,
       median_inc_1000s = avg_median_inc/1000, 
       pnr_spaces_100s = pnr_spaces/100,
+      land_use_entropy_score = land_use_entropy*100,
       avg_trav_time_to_cbd = avg_tt,
       .keep='unused'
       ) %>%
@@ -138,48 +145,53 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
 # these functions spit out regressions for a given dataframe and dependent variable name,
 # specified through a list of named parameters "data" and "y"
 
-base_reg <- function(params) {
+base_reg_full <- function(params) {
   eval(bquote(
-    lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd + #cov_tt +
-       avg_headway + avg_spacing_km
+    lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
+       avg_headway + avg_spacing_km + cov_tt
        + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
        + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-       + walk_score + median_inc_1000s + avg_veh_per_hh + pop_per_acre + jobs_per_acre 
+       + walk_score + land_use_entropy_score + walk_score*land_use_entropy_score 
+       + pop_per_acre + jobs_per_acre + median_inc_1000s #+ avg_veh_per_hh 
        , data=params$data %>% 
          rename(avg_headway = .(as.symbol(paste0('avg_headway_', params$daytype))))
      )))
 }
 
-enhanced_reg <- function(params) { 
-  eval(bquote(
-    lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd + #cov_tt +
-       avg_headway + avg_spacing_km
-       + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
-       + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
-       + walk_score + median_inc_1000s + avg_veh_per_hh + pop_per_acre + jobs_per_acre 
-       + college_students_1000s + hotels
-     , data=params$data %>% 
-         rename(avg_headway = .(as.symbol(paste0('avg_headway_', params$daytype))))
-     )))
+base_reg_bosonly <- function(params) {
+  params %>% base_reg() %>% update(. ~ . -Red -Orange -Blue -jobs_per_acre)
+}
+
+enhanced_reg_full <- function(params) { 
+  params %>% base_reg() %>% update(. ~ . +college_students_1000s)
+}
+
+enhanced_reg_bosonly <- function(params) { 
+  params %>% base_reg_bosonly() %>% update(. ~ . +college_students_1000s +hotels +hospitals)
 }
 
 specifications <- list(
   "Fall 2019 weekday" = list(data=model_data_f19, daytype='wkdy'), 
   "Fall 2023 weekday" = list(data=model_data_f23, daytype='wkdy'),
-  "Fall 2019 weekday (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), daytype='wkdy'),
-  "Fall 2023 weekday (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), daytype='wkdy'),
   "Fall 2019 weekend" = list(data=model_data_f19, daytype='wknd'), 
-  "Fall 2023 weekend" = list(data=model_data_f23, daytype='wknd'),
-  "Fall 2019 weekend (Boston only)" = list(data=model_data_f19 %>% filter(in_bos == 1), daytype='wknd'),
-  "Fall 2023 weekend (Boston only)" = list(data=model_data_f23 %>% filter(in_bos == 1), daytype='wknd')
+  "Fall 2023 weekend" = list(data=model_data_f23, daytype='wknd')
 )
 
-base_regressions <- specifications %>% lapply(base_reg) %>%
-  `names<-`(names(.) %>% lapply(function(name) paste(name, "base")))
-enhanced_regressions <- specifications %>% lapply(enhanced_reg) %>%
-  `names<-`(names(.) %>% lapply(function(name) paste(name, "enhanced")))
+specifications_bosonly <- specifications %>% 
+  lapply(function(s) {list(data=s$data %>% filter(in_bos == 1), daytype=s$daytype)})
 
-regressions <- base_regressions %>% c(enhanced_regressions)
+base_full_regs <- specifications %>% lapply(base_reg_full) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "base full")))
+enhanced_full_regs <- specifications %>% lapply(enhanced_reg_full) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "enhanced full")))
+
+base_bosonly_regs <- specifications_bosonly %>% lapply(base_reg_bosonly) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "base bosonly")))
+enhanced_bosonly_regs <- specifications_bosonly %>% lapply(enhanced_reg_bosonly) %>%
+  `names<-`(names(.) %>% lapply(function(name) paste(name, "enhanced bosonly")))
+
+regressions <- base_full_regs %>% c(enhanced_full_regs) %>% 
+  c(base_bosonly_regs) %>% c(enhanced_bosonly_regs)
 summaries <- regressions %>% lapply(summary)
 
 coefficients <- summaries %>% lapply(function(reg) reg$coefficients)
@@ -187,7 +199,7 @@ adj_r2s <- summaries %>% lapply(function(reg) reg$adj.r.squared)
 f_stats <- summaries %>% lapply(function(reg) reg$fstatistic)
 rmses <- regressions %>% lapply(function(reg) sqrt(mean(reg$residuals^2)))
 
-summaries[['Fall 2023 weekday enhanced']] # display summary for a single specification
+summaries[['Fall 2023 weekday base full']] # display summary for a single specification
 ```
 
 Create a formatted table for easier comparison across specifications
@@ -224,7 +236,7 @@ compare_specifications <- function(var) {
     as.data.frame()
 }
 
-var_names <- coefficients[[length(coefficients)]] %>% row.names() # get variable names from last model
+var_names <- do.call(c, coefficients %>% lapply(row.names)) %>% unique() # get all variable names
 
 formatted_output <- var_names %>%
   lapply(compare_specifications) %>%
@@ -268,42 +280,92 @@ plot_y_yhat_w_labels <- function(df, reg, add_labels=FALSE, transformation=I, tr
        ylab=paste(transform_prefix, 'Predicted Boardings'),
        main=paste(transform_prefix, 'Predicted vs. Actual Boardings by Route-Station'))
   abline(a=0, b=1) # draw 1=1 line for reference
+  legend("bottomright", title="MBTA Route", pch=16,
+         legend=c("Red", "Blue", "Orange", "Green"), col=c("red", "blue", "orange", "green"))
   
   # option to add station labels to help identify the kinds of places we're over- or under-predicting
   if (add_labels) {
-    df_large_resid <- df[abs(resid) > 2500,]
+    df_large_resid <- df[abs(resid) > 3000,]
     y_large_resid <- df_large_resid[[yname]] %>% transformation()
-    yhat_large_resid <- yhat[abs(resid) > 2500] #%>% transformation()
-    text(x=y_large_resid, y=yhat_large_resid, adj=c(0.5,1), cex=0.5,
+    yhat_large_resid <- yhat[abs(resid) > 3000] #%>% transformation()
+    text(x=y_large_resid, y=yhat_large_resid, adj=c(0.5,1.5), cex=0.5,
        labels=paste0(
          str_sub(df_large_resid$route_id, end=1),
          '-', str_sub(df_large_resid$stop_name, end=3))
        )
+    
   }
 }
 ```
 
 ```{r}
 specifications[['Fall 2023 weekday']]$data %>%
-  plot_y_yhat_w_labels(regressions[['Fall 2023 weekday enhanced']], add_labels=T)
+  plot_y_yhat_w_labels(regressions[['Fall 2023 weekday base full']], add_labels=F)
 
 specifications[['Fall 2023 weekday']]$data %>%
   plot_y_yhat_w_labels(
-    regressions[['Fall 2023 weekday enhanced']], #add_labels=T, 
+    regressions[['Fall 2023 weekday base full']], #add_labels=T, 
     transformation=log, transform_prefix='Logged ')
+```
+
+Actual vs predicted map of stations
+
+```{r, message=FALSE}
+pal <- colorFactor(
+  palette = c('yellow', 'purple'), # black for overprediction, white for underprediction
+  domain = c("over-prediction", "under-prediction")
+)
+
+mdf <- model_data_f23 %>%
+  mutate(residual = regressions[['Fall 2023 weekday base full']]$residuals %>% as.numeric(),
+         residual_pct = residual/avg_boardings_wkdy
+         #residual_scaled = rescale(abs(residual), c(2,10))
+         ) %>%
+  select(route_id, parent_station, stop_name, stop_lat, stop_lon, residual, residual_pct) %>%
+  st_as_sf(coords = c("stop_lon","stop_lat"), crs=4326) 
+
+mdf %>%
+  leaflet() %>% addProviderTiles(providers$CartoDB.Positron) %>% setView(-71.1, 42.3, zoom=11) %>%
+  addSymbolsSize(
+    values = ~abs(residual),
+    stroke = TRUE, color="gray", # marker outline
+    fillColor=~pal(ifelse(residual>0, "under-prediction", "over-prediction")), 
+    fillOpacity=0.6,
+    baseSize = 5, shape='circle'
+  ) %>%
+  addLegendSize( # legend for the point colors
+    position="bottomleft",
+    values = ~abs(residual),
+    color = 'gray',
+    fillColor = 'gray',
+    fillOpacity = .6,
+    shape='circle',
+    title = 'Error Size (Weekday Riders)',
+    orientation = 'horizontal',
+    breaks = 4,
+    baseSize = 5) %>%
+  addLegend( # legend for the point size
+    "bottomleft", pal = pal, title = "Error Type", opacity = 1,
+    values = ~ifelse(residual>0, "under-prediction", "over-prediction")
+  ) %>%
+  addScaleBar()
 ```
 
 ```{r}
-specifications[['Fall 2023 weekend']]$data %>%
-  plot_y_yhat_w_labels(regressions[['Fall 2023 weekend base']], add_labels=TRUE)
-
-specifications[['Fall 2023 weekend']]$data %>%
-  plot_y_yhat_w_labels(
-    regressions[['Fall 2023 weekend base']], #add_labels=T, 
-    transformation=log, transform_prefix='Logged ')
+hist(regressions[['Fall 2023 weekday base full']]$residuals, main="Distribution of Model Residuals")
 ```
 
-# TODO: actual vs predicted total ridership
-# TODO: actual vs predicted map of stations
-# TODO: take a preferred specification and do cross-validation 
+We want the residuals to be normally distributed.
 
+Spatial autocorrelation test, using inverse distance weights
+```{r}
+inv_dists <- 1 / as.matrix(dist(cbind(model_data_f23$stop_lon, model_data_f23$stop_lat)))
+inv_dists[!is.finite(inv_dists)] <- 0
+
+midf <- model_data_f23 %>%
+  mutate(residual = regressions[['Fall 2023 weekday base full']]$residuals %>% as.numeric())
+
+Moran.I(midf$residual, inv_dists)
+```
+
+The null hypothesis that there is no spatial autocorrelation, which is what we want for the residuals.
