@@ -850,7 +850,7 @@ rt_station_geoms_f19 %>%
   write.csv('data/cleaned/stations_routes_f19_colleges.csv', row.names=FALSE)
 ```
 
-# Hotels & Restaurants
+# Hotels & Hospitals
 
 ```{r}
 # station-area geometries to which we will join the hotel coordinates
@@ -859,22 +859,29 @@ rt_station_geoms_f19 <- read.csv('data/cleaned/stations_routes_f19_geoms_nonover
 ```
 
 Hotels source: https://data.boston.gov/dataset/licensing-board-licenses/resource/04584beb-8160-4235-af57-bb8337efd512
+Hospitals source: https://data.boston.gov/dataset/hospitals/resource/9ce5935a-bc4f-4a5c-a063-0f15fc01513a
 ```{r}
 library(httr2) # to make the API request from data.boston.gov
 
 bos_licenses_url <- 'https://data.boston.gov/api/3/action/datastore_search?resource_id=04584beb-8160-4235-af57-bb8337efd512&limit=5000'
+bos_hospitals_url <- 'https://data.boston.gov/api/3/action/datastore_search?resource_id=9ce5935a-bc4f-4a5c-a063-0f15fc01513a&limit=5000'
 
-api_raw <- req_perform(request(bos_licenses_url))
+licenses_api_raw <- req_perform(request(bos_licenses_url))
+hospitals_api_raw <- req_perform(request(bos_hospitals_url))
 ```
 
 ```{r}
-body <- api_raw %>%
+response_body <- function(api_raw) {
+  api_raw %>%
   resp_body_string() %>%
   jsonlite::fromJSON()
+}
 
-licenses <- body$result$records
+licenses <- response_body(licenses_api_raw)$result$records
+hospitals <- response_body(hospitals_api_raw)$result$records
 ```
 
+Process and save hotels per route-station
 ```{r}
 hotel_df <- licenses %>%
   filter(license_category == 'Inn', !is.na(gpsx)) %>%
@@ -903,3 +910,33 @@ rt_station_geoms_f19 %>%
   write.csv('data/cleaned/stations_routes_f19_hotels.csv', row.names=FALSE)
 ```
 
+Process and save hospitals per route-station
+```{r}
+hospital_df <- hospitals %>%
+  select(Name, POINT_X, POINT_Y, DailyAvg) %>%
+  st_as_sf(coords = c("POINT_X", "POINT_Y"), crs=4326) %>%
+  st_transform(crs=2249)
+
+join_hospital_data <- function(rt_station_geoms) {
+  rt_station_geoms %>%
+    st_as_sf(crs=4326, wkt = "walk_poly_wkt") %>%
+    st_transform(crs=2249) %>%
+    st_join(hospital_df, join=st_intersects, left=TRUE) %>%
+    group_by(route_id, parent_station) %>% # count hotels per station area
+    summarise(
+      hospitals = sum(case_when(
+        is.na(Name) ~ 0, .default=1
+      )), 
+      hospital_capacity = sum(as.numeric(DailyAvg), na.rm=T), 
+      .groups='drop') %>%
+    st_drop_geometry()
+}
+
+rt_station_geoms_f23 %>%
+  join_hospital_data() %>%
+  write.csv('data/cleaned/stations_routes_f23_hospitals.csv', row.names=FALSE)
+    
+rt_station_geoms_f19 %>%
+  join_hospital_data() %>%
+  write.csv('data/cleaned/stations_routes_f19_hospitals.csv', row.names=FALSE)
+```
