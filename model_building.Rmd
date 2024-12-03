@@ -40,6 +40,7 @@ get_model_data <- function(season) {
     inner_join(get_dataset('acs2022_5yr_pop'), by=id_cols) %>%
     inner_join(get_dataset('2021_wac_agg'), by=id_cols) %>%
     inner_join(get_dataset('2024_lu_entropy'), by=id_cols) %>%
+    inner_join(get_dataset('airbnbs_2024_bos_cam'), by=id_cols) %>%
     inner_join(get_dataset(paste(season, 'colleges', sep='_')), by=id_cols) %>%  
     inner_join(get_dataset(paste(season, 'hotels', sep='_')), by=id_cols) %>% 
     inner_join(get_dataset(paste(season, 'hospitals', sep='_')), by=id_cols) %>% 
@@ -79,7 +80,7 @@ model_data_f19 <- get_model_data('f19')
 continuous_vars <- c('avg_boardings', 'avg_headway_wkdy', 'avg_headway_wknd', 
                      'avg_trav_time_to_cbd', 'cov_tt', 'avg_spacing_km', 'walk_score', 
                      'km_from_cbd', 'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 
-                     'devl_mix', 'hh_no_vehicle_share', 'avg_veh_per_hh')
+                     'devl_mix', 'hh_no_vehicle_share', 'avg_veh_per_hh',"airbnb_count")
 sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes',
                  'pnr_spaces_100s', 'college_students_1000s')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal', 'in_bos')
@@ -159,15 +160,15 @@ base_reg_full <- function(params) {
 }
 
 base_reg_bosonly <- function(params) {
-  params %>% base_reg() %>% update(. ~ . -Red -Orange -Blue -jobs_per_acre)
+  params %>% base_reg_full() %>% update(. ~ . -Red -Orange -Blue -jobs_per_acre)
 }
 
 enhanced_reg_full <- function(params) { 
-  params %>% base_reg() %>% update(. ~ . +college_students_1000s)
+  params %>% base_reg_full() %>% update(. ~ . +college_students_1000s)
 }
 
 enhanced_reg_bosonly <- function(params) { 
-  params %>% base_reg_bosonly() %>% update(. ~ . +college_students_1000s +hotels +hospitals)
+  params %>% base_reg_bosonly() %>% update(. ~ . +college_students_1000s +hotels +hospitals +airbnb_density)
 }
 
 specifications <- list(
