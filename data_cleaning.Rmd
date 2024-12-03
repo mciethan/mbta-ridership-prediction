@@ -23,18 +23,94 @@ ridership_f17_to_f19 <- read.csv('data/mbta/rail_ridership_stops_F17toF19.csv')
 ```
 
 ```{r}
+riders_period <- ridership_f23 %>% 
+  mutate(period = case_when(
+    time_period_name %in% c('AM_PEAK', 'PM_PEAK') ~ str_to_lower(time_period_name)
+    , .default='off_peak'
+    )) %>%
+  group_by(season, day_type_id, period, route_id, parent_station) %>%
+  summarise( # first, sum up across the time periods within weekday off-peak
+    across(c(total_ons, total_offs), sum), 
+    num_svc_days = mean(number_service_days), # avg bc svc days are equal within day types
+    .groups='drop') 
+
+riders_day_type <- riders_period %>%
+  group_by(season, day_type_id, route_id, parent_station) %>%
+  summarise( # sum up across the time periods within day types
+    across(c(total_ons, total_offs), sum), 
+    num_svc_days = mean(num_svc_days), # avg bc svc days are equal within day types
+    .groups='drop') %>% 
+  mutate( # create a binary daytype of just weekday vs weekend
+    daytype = case_when(day_type_id == 'day_type_01' ~ 'wkdy', .default='wknd'),
+    ) 
+
+riders_fullweek <- riders_day_type %>% 
+  group_by(season, route_id, parent_station) %>%
+  summarise( # sum up the boardings for the entire week regardless of day type
+    across(c(total_ons, total_offs, num_svc_days), sum), 
+    .groups='drop') %>%
+  mutate(
+    avg_boardings = total_ons/num_svc_days,
+    avg_alightings = total_offs/num_svc_days,
+    .keep='unused'
+    )
+
+riders_wkdy_periods <- riders_period %>%
+  filter(day_type_id == 'day_type_01') %>%
+  select(-day_type_id) %>%
+  mutate(
+    avg_boardings = total_ons/num_svc_days,
+    avg_alightings = total_offs/num_svc_days,
+    .keep='unused'
+    ) %>%
+  pivot_wider( # create separate columns for wkdy vs wknd boardings
+    id_cols = c("season", "route_id", "parent_station"),
+    names_from = 'period', values_from = c('avg_boardings', 'avg_alightings')
+  )
+
+riders_day_type %>%
+  group_by(season, daytype, route_id, parent_station) %>%
+  summarise( # sum up to the daytype (weekday vs weekend) level
+    across(c(total_ons, total_offs, num_svc_days), sum), 
+    .groups='drop') %>%
+  mutate(
+    avg_boardings = total_ons/num_svc_days,
+    avg_alightings = total_offs/num_svc_days,
+    .keep='unused'
+    ) %>%
+  pivot_wider( # create separate columns for wkdy vs wknd boardings
+    id_cols = c("season", "route_id", "parent_station"),
+    names_from = 'daytype', values_from = c('avg_boardings', 'avg_alightings')
+  ) %>% # then join with the weekday period-specific boardings
+  inner_join(riders_wkdy_periods, by=c("season", "route_id", "parent_station")) %>% 
+  # and join with the more general avg_boardings for the full week
+  inner_join(riders_fullweek, by=c("season", "route_id", "parent_station"))
+```
+
+```{r}
 clean_ridership <- function(ridership) {
-  riders_day_type <- ridership %>% 
-    group_by(season, day_type_id, route_id, parent_station) %>%
-    summarise( # first, sum up across the time periods within the weekday day type
+  riders_period <- ridership %>% 
+    mutate(period = case_when(
+      time_period_name %in% c('AM_PEAK', 'PM_PEAK') ~ str_to_lower(time_period_name)
+      , .default='off_peak'
+      )) %>%
+    group_by(season, day_type_id, period, route_id, parent_station) %>%
+    summarise( # first, sum up across the time periods within weekday off-peak
       across(c(total_ons, total_offs), sum), 
       num_svc_days = mean(number_service_days), # avg bc svc days are equal within day types
+      .groups='drop') 
+  
+  riders_day_type <- riders_period %>%
+    group_by(season, day_type_id, route_id, parent_station) %>%
+    summarise( # sum up across the time periods within day types
+      across(c(total_ons, total_offs), sum), 
+      num_svc_days = mean(num_svc_days), # avg bc svc days are equal within day types
       .groups='drop') %>% 
     mutate( # create a binary daytype of just weekday vs weekend
-      daytype = case_when(day_type_id == 'day_type_01' ~ 'wkdy', .default='wknd')
+      daytype = case_when(day_type_id == 'day_type_01' ~ 'wkdy', .default='wknd'),
       ) 
   
-  riders_fullweek <- riders_day_type %>%
+  riders_fullweek <- riders_day_type %>% 
     group_by(season, route_id, parent_station) %>%
     summarise( # sum up the boardings for the entire week regardless of day type
       across(c(total_ons, total_offs, num_svc_days), sum), 
@@ -44,6 +120,19 @@ clean_ridership <- function(ridership) {
       avg_alightings = total_offs/num_svc_days,
       .keep='unused'
       )
+  
+  riders_wkdy_periods <- riders_period %>%
+    filter(day_type_id == 'day_type_01') %>%
+    select(-day_type_id) %>%
+    mutate(
+      avg_boardings = total_ons/num_svc_days,
+      avg_alightings = total_offs/num_svc_days,
+      .keep='unused'
+      ) %>%
+    pivot_wider( # create separate columns for wkdy vs wknd boardings
+      id_cols = c("season", "route_id", "parent_station"),
+      names_from = 'period', values_from = c('avg_boardings', 'avg_alightings')
+    )
   
   riders_day_type %>%
     group_by(season, daytype, route_id, parent_station) %>%
@@ -58,7 +147,9 @@ clean_ridership <- function(ridership) {
     pivot_wider( # create separate columns for wkdy vs wknd boardings
       id_cols = c("season", "route_id", "parent_station"),
       names_from = 'daytype', values_from = c('avg_boardings', 'avg_alightings')
-    ) %>% # then join with the more general avg_boardings for the full week
+    ) %>% # then join with the weekday period-specific boardings
+    inner_join(riders_wkdy_periods, by=c("season", "route_id", "parent_station")) %>% 
+    # and join with the more general avg_boardings for the full week
     inner_join(riders_fullweek, by=c("season", "route_id", "parent_station"))
 }
 
