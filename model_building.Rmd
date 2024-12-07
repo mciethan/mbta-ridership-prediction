@@ -49,7 +49,8 @@ get_model_data <- function(season) {
     mutate( # this first mutate is for any operations where we want to keep the variables that are used
       transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
       airbnb_count = case_when(is.na(airbnb_count) ~ 0, .default=airbnb_count),
-      cov_tt = sd_tt/avg_tt # coefficient of variation of travel time to CBD
+      airbnb_count = case_when(is.na(airbnb_density) ~ 0, .default=airbnb_density),
+      cov_trav_time_to_cbd = sd_tt/avg_tt # coefficient of variation of travel time to CBD
     ) %>%
     mutate( # and this second mutate is for any where we can discard the variables that are used
       terminal = case_when(terminal == 1 ~ 1, .default=0),
@@ -78,17 +79,36 @@ model_data_f19 <- get_model_data('f19')
 ## Descriptive Statistics
 
 ```{r}
-continuous_vars <- c('avg_boardings', 'avg_headway_wkdy', 'avg_headway_wknd', 
-                     'avg_trav_time_to_cbd', 'cov_tt', 'avg_spacing_km', 'walk_score', 
+continuous_vars <- c('avg_boardings_wkdy', 'avg_headway_wkdy', 'avg_trav_time_to_cbd', 
+                     'cov_trav_time_to_cbd', 'avg_spacing_km', 'walk_score', 'land_use_entropy_score',
                      'km_from_cbd', 'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 
-                     'devl_mix', 'hh_no_vehicle_share', 'avg_veh_per_hh', 'airbnb_count')
-sparse_vars <- c('connecting_bus_riders_100s', 'connecting_cr_routes',
+                     'hh_no_vehicle_share', 'avg_veh_per_hh', 'airbnb_density')
+sparse_vars <- c('connecting_bus_routes', 'connecting_cr_routes',
                  'pnr_spaces_100s', 'college_students_1000s')
-dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal', 'in_bos')
+dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal')
 
 
-numeric_data <- model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars)))
-summary(numeric_data) # minimum, median, mean, maximum, and interquartile range for each variable
+numeric_data <- model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars, dummy_vars)))
+descriptive_stats <- numeric_data %>%
+  pivot_longer(names(numeric_data), names_to='variable', values_to='value') %>%
+  group_by(variable) %>%
+  summarise_at(vars(value), list(
+    Min = ~min(., na.rm = T),
+    Q1=~quantile(., probs = 0.25, na.rm=T),
+    Median = ~median(., na.rm = T),
+    Q3=~quantile(., probs = 0.75, na.rm=T),
+    Max = ~max(., na.rm=T),
+    Mean = ~mean(., na.rm=T),
+    StDev = ~sd(., na.rm=T)
+  )) %>%
+  column_to_rownames('variable') %>%
+  round(2)
+  
+descriptive_stats
+```
+
+```{r}
+descriptive_stats %>% write.csv('descriptive_statistics.csv', row.names = TRUE)
 ```
 
 For dummy variables (0 or 1), show what number and percent of observations the 1's represent
@@ -138,7 +158,7 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 
 Correlation matrix
 ```{r}
-model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
+model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars))) %>% cor()
 ```
 
 ## Model Building
@@ -150,7 +170,7 @@ model_data_f23 %>% select(all_of(continuous_vars)) %>% cor()
 base_reg_full <- function(params) {
   eval(bquote(
     lm(.(as.symbol(paste0('avg_boardings_', params$daytype))) ~ avg_trav_time_to_cbd +
-       avg_headway + avg_spacing_km + cov_tt
+       avg_headway + avg_spacing_km + cov_trav_time_to_cbd
        + Red + Orange + Blue + transfer + terminal #+ km_from_cbd
        + connecting_cr_routes + connecting_bus_routes + pnr_spaces_100s
        + walk_score + land_use_entropy_score + walk_score*land_use_entropy_score 
@@ -362,7 +382,9 @@ mdf %>%
 ```
 
 ```{r}
-hist(regressions[['Fall 2023 weekday base full']]$residuals, main="Distribution of Model Residuals")
+hist(
+  regressions[['Fall 2023 weekday base full']]$residuals, 
+  main="Distribution of Model Residuals", xlab='Error (weekday boardings)')
 ```
 
 We want the residuals to be normally distributed.
