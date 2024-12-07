@@ -7,4 +7,16 @@ These scripts were developed in support of a school report we submitted for CIVE
 
 Read the final report here: [Using Open Data to Enhance Station-Level Transit Ridership Models](https://docs.google.com/document/d/1bCEKMQc2sCZsuZDSd6N0AVITrZFgVIpXqUhIXhQ5qhY/edit?usp=sharing)
 
+## Script descriptions
 
+`model_building.Rmd` ingests and joins cleaned data at the route-station level, builds the regression models, exports formatted model outputs to `formatted_output.csv`, and includes code for generating charts and maps summarizing model prediction accuracy.
+
+`data_cleaning.Rmd` ingests and cleans data sources and aggregates them to the season/route/station level where applicable, including:
+   - MBTA rail rapid transit ridership
+   - MBTA recap GTFS (to derive station locations, headways, terminal stops, interstation spacing, and bus + Commuter Rail connections)
+   - MBTA travel times (to derive average travel times to the central business district)
+   - Walking-distance buffer areas from the OpenRouteService API, with extra geoprocessing to compute non-overlapping areas per route
+   - MBTA park-and-ride inventory from CTPS data
+   - Calculating crow-flies distances from stations to the central business district
+   - College locations and enrollments from NCES IPEDS data
+   - Hotel and hospital locations from Analyze Boston
