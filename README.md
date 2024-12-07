@@ -9,7 +9,12 @@ Read the final report here: [Using Open Data to Enhance Station-Level Transit Ri
 
 ## Script descriptions
 
-`model_building.Rmd` ingests and joins cleaned data at the route-station level, builds the regression models, exports formatted model outputs to `formatted_output.csv`, and includes code for generating charts and maps summarizing model prediction accuracy.
+`model_building.Rmd` ingests and joins cleaned data at the route-station level to build the regression models, while also:
+   - generating tables and charts of descriptive statistics
+   - exporting formatted model outputs to `formatted_output.csv`
+   - generating scatter plots of predicted vs actual ridership by route-station
+   - generating maps summarizing model over- and under-prediction per station
+   - conducting statistical tests and visualizations of residual normality and spatial autocorrelation
 
 `data_cleaning.Rmd` ingests and cleans data sources and aggregates them to the season/route/station level where applicable, including:
    - MBTA rail rapid transit ridership
