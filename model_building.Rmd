@@ -49,7 +49,7 @@ get_model_data <- function(season) {
     mutate( # this first mutate is for any operations where we want to keep the variables that are used
       transfer = case_when(stop_name %in% xfer_station_names ~ 1, .default=0),
       airbnb_count = case_when(is.na(airbnb_count) ~ 0, .default=airbnb_count),
-      airbnb_count = case_when(is.na(airbnb_density) ~ 0, .default=airbnb_density),
+      airbnb_density = case_when(is.na(airbnb_density) ~ 0, .default=airbnb_density),
       cov_trav_time_to_cbd = sd_tt/avg_tt # coefficient of variation of travel time to CBD
     ) %>%
     mutate( # and this second mutate is for any where we can discard the variables that are used
@@ -84,7 +84,7 @@ continuous_vars <- c('avg_boardings_wkdy', 'avg_headway_wkdy', 'avg_trav_time_to
                      'km_from_cbd', 'median_inc_1000s', 'pop_per_acre', 'jobs_per_acre', 
                      'hh_no_vehicle_share', 'avg_veh_per_hh', 'airbnb_density')
 sparse_vars <- c('connecting_bus_routes', 'connecting_cr_routes',
-                 'pnr_spaces_100s', 'college_students_1000s')
+                 'pnr_spaces_100s', 'college_students_1000s', 'hotels', 'hospitals')
 dummy_vars <- c('Red', 'Orange', 'Green', 'Blue', 'transfer', 'terminal')
 
 
