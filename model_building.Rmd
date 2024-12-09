@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse) # for pipe notation and tabular functions
+library(reshape2) # for melt() to help create correlation heatmap
 library(sf) # for geographic operations
 library(car) # for the vif function to test multicollinearity
 library(leaflet) # for mapping
@@ -156,9 +157,26 @@ Pairs plot
 model_data_f23 %>% select(all_of(continuous_vars)) %>% pairs()
 ```
 
-Correlation matrix
+Correlation matrix / heatmap
 ```{r}
-model_data_f23 %>% select(all_of(c(continuous_vars, sparse_vars))) %>% cor()
+correlation_matrix <- model_data_f23 %>% 
+  #filter(in_bos == 1) %>%
+  select(all_of(c(continuous_vars, sparse_vars, dummy_vars))) %>% 
+  cor() %>% 
+  round(2)
+
+correlation_matrix %>% # correlation heatmap
+  melt() %>% 
+  ggplot(aes(x=Var1, y=Var2, fill=value)) + geom_tile() +
+  geom_text(aes(Var2, Var1, label = value), color = "black", size = 1.5) +
+  scale_fill_gradient2(low = "purple", high = "orange", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+   name="Pearson\nCorrelation") +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+    )
 ```
 
 ## Model Building
