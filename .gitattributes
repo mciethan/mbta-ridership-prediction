@@ -1,5 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# detect .Rmd as a language
-linguist-detectable=true
+# detect R Markdown as a language
+*.[Rr]md linguist-detectable=true
